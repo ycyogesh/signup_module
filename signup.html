@@ -20,7 +20,7 @@
                     <label for="name">Email</label>
                     <input type="email" name="email" id="email" value=""><br><br>
                     <label for="pass">Password</label>
-                    <input type="password" name="password" id="email" value=""><br><br>
+                    <input type="password" name="password" id="pwd" value=""><br><br>
                     <input type="button" value="submit" onclick="signUp()">
                 </form>
             </div>
@@ -31,7 +31,23 @@
     <script>
 
         function signUp(){
-            
+            let mail = document.getElementById("email").value
+            let passwrd = document.getElementById("pwd").value
+            let user = {
+                'email' : mail,
+                'pwd' : passwrd
+            }
+            fetch("http://localhost:3010/signUp",{
+                method : "POST",
+                body : JSON.stringify(user),
+                headers : {
+                    "Content-Type" : "application/json",
+                },
+            }).then(res=>{
+                res.json().then(data=>{
+                    console.log(data);
+                })
+            })
         }
 
     </script>
