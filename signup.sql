@@ -1,4 +1,4 @@
--- use crud; 
+use crud; 
 -- create table user(id int(11) primary key not null auto_increment,
 -- email varchar(255),
 -- passwrd varchar(255),
@@ -10,4 +10,5 @@
 -- created_at datetime default current_timestamp,
 -- updated_at datetime);
 -- desc user;
--- select * from user;
+select * from user;
+-- delete from user where id= 3;
