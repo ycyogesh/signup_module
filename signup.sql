@@ -9,3 +9,5 @@
 -- updated_by int(11),
 -- created_at datetime default current_timestamp,
 -- updated_at datetime);
+-- desc user;
+-- select * from user;

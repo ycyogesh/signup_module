@@ -18,20 +18,16 @@ var connection = mysql.createConnection({
 
 connection.connect(function (err) {
   if (err) {
-    console.log("error connecting" + err.stack);
+    console.error("error connecting" + err.stack);
     return;
   }
   console.log("connected as id :", +connection.threadId);
 });
 
-
-
-
-
 app.post("/signUp", (req, res) => {
   let data = req.body;
 
-  bcrypt.genSalt(10, (err, salt) => {
+  bcrypt.genSalt(saltRounds, (err, salt) => {
     console.log("----------->");
     bcrypt.hash(data.pwd, salt, function (err, hash) {
       let sql = "insert into user(email,passwrd) values(?,?)";
@@ -45,18 +41,84 @@ app.post("/signUp", (req, res) => {
   });
 });
 
-
-
-app.post("/logIn",(req,res)=>{
-    let data = req.body;
-    bcrypt.compare(data.pwd, hash, function(err, result) {
-        if (result) {
-           window.location = "form_operations.html"
-       }
-    });
+app.post("/logIn", (req, res) => {
+  var pwdCheck
+  let data = req.body
+  console.log(data);
+  console.log("Password Entered",data.pwd);
+  let sql = "select passwrd from user where email=" + "'" + data.email + "'";
+  connection.query(sql,(err,result)=>{
+    if(err){
+      console.error(err.stack);
+    }
+    console.log("Password in Database",result[0].passwrd);
+    bcrypt.compare(data.pwd,result[0].passwrd,(err,result)=>{
+        if(result){
+          console.log("Matched");
+        }
+        else{
+          console.log("Not Matched");
+        }
+        })
+  })
 })
 
-
-app.listen(3010, () => {
+app.listen(3011, () => {
   console.log("App Running");
 });
+
+
+
+
+
+
+
+
+// var pwdCheck;
+// let data = req.body;
+//   console.log();
+//   console.log(data.email);
+//   let sql = "select * from user where email=" + "'" + data.email + "'";
+//   connection.query(sql, (err, result) => {
+//     if (err) {
+//       console.error(err.stack);
+//       return;
+//     }
+//     console.log("<--------->", result);
+//     bcrypt.genSalt(saltRounds, (err, salt) => {
+//       bcrypt.hash(result.passwrd, salt, (err, hash) => {
+//         pwdCheck = hash;
+//         console.log(pwdCheck);
+//       });
+//     });
+//     // let pwdCheck = result.passwrd;
+//     bcrypt.compare(pwdCheck, hash, function (err, result) {
+//       console.log("Before------------>", data.pwd, "After----------->", hash);
+//       if (result) {
+//         console.log("<--------------Compared----------->");
+//         //  window.location = "http://127.0.0.1:5501/form_operations.html"
+//       } else {
+//         console.log("Not Matched");
+//       }
+//     });
+//   });
+// });
+
+
+
+
+// pwdCheck = bcrypt.genSalt(saltRounds, (err, salt) => {
+//   bcrypt.hash(data.pwd,salt,(err,hash)=>{
+//     console.log(result[0].passwrd);
+//     console.log(hash);
+//     if(result[0].passwrd==hash){
+//       console.log("Check---------->",hash);
+//       console.log("<-------------Password Matched----------->");
+//     }
+//     else{
+//       console.log("Hashed------------>",hash,"Entered",result[0].passwrd);
+//       console.log("<-------------Not Matched---------------->");
+//     }
+//   })
+// // console.log("hashed",pwdCheck);
+// })
