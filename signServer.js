@@ -5,6 +5,8 @@ const mysql = require("mysql");
 const bodyParser = require("body-parser");
 const check = require("express-validator");
 const nodemailer = require("nodemailer");
+const jwt = require('jsonwebtoken');
+
 
 const saltRounds = 10;
 app = express();
@@ -66,6 +68,8 @@ function sendActive(mailId) {
 app.post("/signUp", (req, res) => {
   let data = req.body;
 
+
+  
   let sqlCheck = "select email from user where email =" + "'" + data.email + "'";
   connection.query(sqlCheck,(err,result)=>{
     if(err){
@@ -76,11 +80,14 @@ app.post("/signUp", (req, res) => {
       res.send("Email Already Registered")
     }
     else{
+      var token=jwt.sign({email:data.email}, "Yc@12Yc", { expiresIn: '1800s' });
+      
+      console.log("token-------------->",token);
       bcrypt.genSalt(saltRounds, (err, salt) => {
         console.log("----------->");
         bcrypt.hash(data.pwd, salt, function (err, hash) {
-          let sql = "insert into user(email,passwrd) values(?,?)";
-          connection.query(sql, [data.email, hash], (err, result) => {
+          let sql = "insert into user(email,passwrd,token) values(?,?,?)";
+          connection.query(sql, [data.email, hash,token], (err, result) => {
             if (err) {
               console.log("Error");
             }
@@ -126,48 +133,3 @@ app.listen(3011, () => {
   console.log("App Running");
 });
 
-// var pwdCheck;
-// let data = req.body;
-//   console.log();
-//   console.log(data.email);
-//   let sql = "select * from user where email=" + "'" + data.email + "'";
-//   connection.query(sql, (err, result) => {
-//     if (err) {
-//       console.error(err.stack);
-//       return;
-//     }
-//     console.log("<--------->", result);
-//     bcrypt.genSalt(saltRounds, (err, salt) => {
-//       bcrypt.hash(result.passwrd, salt, (err, hash) => {
-//         pwdCheck = hash;
-//         console.log(pwdCheck);
-//       });
-//     });
-//     // let pwdCheck = result.passwrd;
-//     bcrypt.compare(pwdCheck, hash, function (err, result) {
-//       console.log("Before------------>", data.pwd, "After----------->", hash);
-//       if (result) {
-//         console.log("<--------------Compared----------->");
-//         //  window.location = "http://127.0.0.1:5501/form_operations.html"
-//       } else {
-//         console.log("Not Matched");
-//       }
-//     });
-//   });
-// });
-
-// pwdCheck = bcrypt.genSalt(saltRounds, (err, salt) => {
-//   bcrypt.hash(data.pwd,salt,(err,hash)=>{
-//     console.log(result[0].passwrd);
-//     console.log(hash);
-//     if(result[0].passwrd==hash){
-//       console.log("Check---------->",hash);
-//       console.log("<-------------Password Matched----------->");
-//     }
-//     else{
-//       console.log("Hashed------------>",hash,"Entered",result[0].passwrd);
-//       console.log("<-------------Not Matched---------------->");
-//     }
-//   })
-// // console.log("hashed",pwdCheck);
-// })
