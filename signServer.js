@@ -29,23 +29,16 @@ connection.connect(function (err) {
 function sendActive(mailId) {
   console.log("Activation Processing");
   var transporter = nodemailer.createTransport({
-    service: "gmail",
-    secure : true,
+    host: "smtp.mailtrap.io",
+    port: 2525,
     auth: {
-      type: 'custom',
-      method: 'MY-CUSTOM-METHOD',
-      user: "",
-      pass: "",
-    },
-    customAuth: {
-      'MY-CUSTOM-METHOD': ctx => {       
-      }
-  }
+      user: "594b747d5faf6b",
+      pass: "156e561cccbc78"
+    }
   });
-  let poolConfig = "smtps://username:/?pool=true";
 
   var mailOptions = {
-    from: "",
+    from: "yc@yc.com",
     to: mailId,
     subject: "Verify Your Account",
     text: "That was easy!",
