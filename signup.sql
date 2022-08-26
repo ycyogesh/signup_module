@@ -1,4 +1,4 @@
-use crud; 
+-- use crud; 
 -- create table user(id int(11) primary key not null auto_increment,
 -- email varchar(255),
 -- passwrd varchar(255),
@@ -12,3 +12,5 @@ use crud;
 -- desc user;
 select * from user;
 -- delete from user where id= 3;
+select email from user;
+update user set token = null,is_verified = 1 where id = 4;

@@ -1,38 +1,54 @@
-"use strict";
-const nodemailer = require("nodemailer");
+const express = require('express');
+const dotenv = require('dotenv');
+const jwt = require('jsonwebtoken');
 
-// async..await is not allowed in global scope, must use a wrapper
-async function main() {
-  // Generate test SMTP service account from ethereal.email
-  // Only needed if you don't have a real mail account for testing
-  let testAccount = await nodemailer.createTestAccount();
+const app = express();
 
-  // create reusable transporter object using the default SMTP transport
-  let transporter = nodemailer.createTransport({
-    host: "smtp.ethereal.email",
-    port: 587,
-    secure: false, // true for 465, false for other ports
-    auth: {
-      user: testAccount.user, // generated ethereal user
-      pass: testAccount.pass, // generated ethereal password
-    },
-  });
+// Set up Global configuration access
+dotenv.config();
 
-  // send mail with defined transport object
-  let info = await transporter.sendMail({
-    from: '"Fred Foo 👻" <foo@example.com>', // sender address
-    to: "stalininnaci0804@gmail.com", // list of receivers
-    subject: "Hello ✔", // Subject line
-    text: "Hello world?", // plain text body
-    html: "<b>Hello world?</b>", // html body
-  });
+let PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+console.log(`Server is up and running on ${PORT} ...`);
+});
 
-  console.log("Message sent: %s", info.messageId);
-  // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+// Main Code Here //
+// Generating JWT
+app.post("/user/generateToken", (req, res) => {
+	// Validate User Here
+	// Then generate JWT Token
 
-  // Preview only available when sending through an Ethereal account
-  console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-  // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
-}
+	let jwtSecretKey = process.env.JWT_SECRET_KEY;
+	let data = {
+		time: Date(),
+		userId: 12,
+	}
 
-main().catch(console.error);
+	const token = jwt.sign(data, jwtSecretKey);
+
+	res.send(token);
+});
+
+// Verification of JWT
+app.get("/user/validateToken", (req, res) => {
+	// Tokens are generally passed in header of request
+	// Due to security reasons.
+
+	let tokenHeaderKey = process.env.TOKEN_HEADER_KEY;
+	let jwtSecretKey = process.env.JWT_SECRET_KEY;
+
+	try {
+		const token = req.header(tokenHeaderKey);
+
+		const verified = jwt.verify(token, jwtSecretKey);
+		if(verified){
+			return res.send("Successfully Verified");
+		}else{
+			// Access Denied
+			return res.status(401).send(error);
+		}
+	} catch (error) {
+		// Access Denied
+		return res.status(401).send(error);
+	}
+});

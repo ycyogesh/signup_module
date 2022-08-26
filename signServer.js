@@ -6,12 +6,14 @@ const bodyParser = require("body-parser");
 const check = require("express-validator");
 const nodemailer = require("nodemailer");
 const jwt = require('jsonwebtoken');
+const dotenv = require('dotenv');
 
 
 const saltRounds = 10;
 app = express();
 app.use(cors());
 app.use(express.json());
+dotenv.config();
 
 var connection = mysql.createConnection({
   host: "localhost",
@@ -28,8 +30,8 @@ connection.connect(function (err) {
   console.log("connected as id :", +connection.threadId);
 });
 
-function sendActive(mailId) {
-  console.log("Activation Processing");
+function sendActive(mailId,token) {
+  console.log("Activation Processing",token);
   var transporter = nodemailer.createTransport({
     host: "smtp.mailtrap.io",
     port: 2525,
@@ -43,7 +45,8 @@ function sendActive(mailId) {
     from: "yc@yc.com",
     to: mailId,
     subject: "Verify Your Account",
-    text: "That was easy!",
+    text: "To verify your account",
+    html : '<html><head><body><p>To verify your account</p><a href="http://localhost:5500/token.html?token='+token+'">Click Here</a></body></head></html>',
     dsn: {
       id: 'ID',
       return: 'headers',
@@ -77,10 +80,11 @@ app.post("/signUp", (req, res) => {
     }
     else if(result.length>0){
       console.log("Email Already Registered");
+      // alert("Email Already Registered!");
       res.send("Email Already Registered")
     }
     else{
-      var token=jwt.sign({email:data.email}, "Yc@12Yc", { expiresIn: '1800s' });
+      var token=jwt.sign({email:data.email + parseInt(Math.random()*10)}, "Yc@12Yc", { expiresIn: '1800s' });
       
       console.log("token-------------->",token);
       bcrypt.genSalt(saltRounds, (err, salt) => {
@@ -91,7 +95,7 @@ app.post("/signUp", (req, res) => {
             if (err) {
               console.log("Error");
             }
-            sendActive(data.email);
+            sendActive(data.email,token);
             console.log("Succesfully Registered...");
             res.json({ result });
           });
@@ -104,8 +108,39 @@ app.post("/signUp", (req, res) => {
 
 });
 
+app.get("/token",(req,res)=>{
+  let token = req.query.token
+  console.log("query----------->",req.query);
+  let sql = "select id from user where token =" + "'" + token + "'";
+  connection.query(sql,(err,result)=>{
+    console.log("result------------>",result[0].id);
+    if(err){
+      console.error(err.stack);
+    }
+    else{
+      console.log("Token Matched----------->");
+      let sql1 = "update user set token = null,is_verified = 1 where id="+ "'" + result[0].id + "'";
+      connection.query(sql1,(err,result)=>{
+        if(err){
+          console.error(err.stack);
+        }
+        res.send(""+result)
+          })
+  }
+})
+
+  
+  
+
+  // res.send(token)
+
+})
+
+
+
+
 app.post("/logIn", (req, res) => {
-  var pwdCheck;
+  // var pwdCheck;
   let data = req.body;
   console.log(data);
   console.log("Password Entered", data.pwd);
@@ -129,7 +164,10 @@ app.post("/logIn", (req, res) => {
   });
 });
 
-app.listen(3011, () => {
+
+let PORT = process.env.PORT || 3012;
+
+app.listen(PORT, () => {
   console.log("App Running");
 });
 

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h2 style="color: springgreen;" id="Result"></h2>
+
+
+    <script>
+        function getToken(){
+            var currentUrl = window.location.href;
+            params = (new URL(currentUrl)).searchParams;
+           console.log("params---------->",params);
+            let token = params.get("token");
+            fetch("http://localhost:3012/token?token="+token).then(res=>{
+                
+                console.log(res);
+                res.text().then(data=>{
+                    console.log("Succesfully------------>",data);
+                    // data.send();
+                })
+            })
+            console.log(currentUrl);
+        }
+        getToken()
+        // onclick ="getToken()"
+    </script>
+    
+</body>
+</html>
+
+
+
+
+
+<html><head><body><a href="http:localhost:3012/token.html?token=">Click Here</a></body></head></html>
