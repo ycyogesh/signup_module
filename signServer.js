@@ -46,7 +46,7 @@ function sendActive(mailId,token) {
     to: mailId,
     subject: "Verify Your Account",
     text: "To verify your account",
-    html : '<html><head><body><p>To verify your account</p><a href="http://localhost:5500/token.html?token='+token+'">Click Here</a></body></head></html>',
+    html : '<html><body><p>To verify your account</p><a href="http://localhost:5500/token.html?token='+token+'">Click Here</a></body></html>',
     dsn: {
       id: 'ID',
       return: 'headers',
@@ -124,7 +124,7 @@ app.get("/token",(req,res)=>{
         if(err){
           console.error(err.stack);
         }
-        res.send(""+result)
+        res.send(result.protocol41);
           })
   }
 })

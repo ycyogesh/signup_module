@@ -7,7 +7,7 @@
     <title>Document</title>
 </head>
 <body>
-    <h2 style="color: springgreen;" id="Result"></h2>
+    <h2 style="color: springgreen;" id="result"></h2>
 
 
     <script>
@@ -20,6 +20,9 @@
                 
                 console.log(res);
                 res.text().then(data=>{
+                    if(data){
+                        document.getElementById("result").innerText = "Successfully Activated"
+                    }
                     console.log("Succesfully------------>",data);
                     // data.send();
                 })
