@@ -7,9 +7,9 @@
     <title>Document</title>
 </head>
 <body>
-    <h2 style="color: springgreen;" id="result"></h2>
-
-
+    <h2 style="color:limegreen;" id="result"></h2>
+    <h4 id="logIn"></h4>
+    
     <script>
         function getToken(){
             var currentUrl = window.location.href;
@@ -22,6 +22,8 @@
                 res.text().then(data=>{
                     if(data){
                         document.getElementById("result").innerText = "Successfully Activated"
+                        document.getElementById("logIn").innerHTML = '<a href="./login.html" id="logIn"><button type="button">Click here to Login</button></a>'
+
                     }
                     console.log("Succesfully------------>",data);
                     // data.send();
@@ -40,4 +42,4 @@
 
 
 
-<html><head><body><a href="http:localhost:3012/token.html?token=">Click Here</a></body></head></html>
+<!-- <html><head><body><a href="http:localhost:3012/token.html?token=">Click Here</a></body></head></html> -->
