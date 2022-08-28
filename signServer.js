@@ -146,7 +146,6 @@ app.post("/logIn", (req, res) => {
   console.log("Password Entered", data.pwd);
 
   
-
   let sql = "select passwrd from user where email=" + "'" + data.email + "'";
   connection.query(sql, (err, result) => {
     if (err) {
@@ -155,13 +154,21 @@ app.post("/logIn", (req, res) => {
 
     console.log("Password in Database", result[0].passwrd);
     bcrypt.compare(data.pwd, result[0].passwrd, (err, result) => {
-      if (result) {
+      if(err){
+        console.error(err.stack);
+      }
+      else if (result) {
         console.log("Matched");
+        res.json(result)
+
+
       } else {
         console.log("Not Matched");
+        // res.send("Login Failed...")
       }
     });
   });
+  
 });
 
 
