@@ -45,15 +45,24 @@
                 },
             }).then(res=>{
                 res.json().then(result=>{
-                    if(result){
-                        window.location.href("http://localhost:5501/form_operations.html")
+                    if(result.result){
+                        console.log("result---------->",result);
+                        window.alert("Login Succesfull");
+                        localStorage.setItem("token",result.token);
+                        console.log("Local Storage------------->",localStorage.getItem("token"));
+                        window.location.replace("http://localhost:5501/form_operations.html")
                     }
                     else{
-
+                        alertFunction()
                     }
+                    
                     // res.json({result})
                 })
             })
+        };
+
+        function alertFunction(){
+            window.alert("Something went wrong!");
         }
 
     </script>

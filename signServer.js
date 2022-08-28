@@ -159,8 +159,11 @@ app.post("/logIn", (req, res) => {
       }
       else if (result) {
         console.log("Matched");
-        res.json(result)
+        let token = jwt.sign({email:data.email + parseInt(Math.random()*10)},"yc@201",{ expiresIn: '1800s' })
 
+        res.json({'result':result,
+          'token' : token
+        })
 
       } else {
         console.log("Not Matched");
