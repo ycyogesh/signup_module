@@ -93,7 +93,7 @@
         // console.log('!!!!!!!!!!!!!', obj)
 
         if (isPost) {
-          fetch("http://localhost:3003/sql", {
+          fetch("http://localhost:3012/sql", {
             method: "POST",
             body: JSON.stringify(obj),
             headers: {
@@ -108,7 +108,7 @@
           obj["id"] = document.getElementById("id").value;
 
           console.log("!!!!!!!!", obj.id);
-          fetch("http://localhost:3003/putData", {
+          fetch("http://localhost:3012/putData", {
             method: "PUT",
             body: JSON.stringify(obj),
             headers: {
@@ -130,7 +130,12 @@
       }
 
       function myFunction() {
-        fetch("http://localhost:3003/sql").then((res) => {
+        fetch("http://localhost:3012/sql",{
+          method : "GET",
+          headers : {
+             "Authorization" : "Bearer "+tokenNew
+          }
+        }).then((res) => {
           res.json().then((data) => {
             console.log(data);
             console.log(data.result);
@@ -167,7 +172,7 @@
         document.getElementById("id").value = id;
         isPost = false;
         console.log("---", id);
-        fetch("http://localhost:3003/getRecordById?id=" + id).then((res) => {
+        fetch("http://localhost:3012/getRecordById?id=" + id).then((res) => {
           res.json().then((data) => {
             // result = data;
             console.log(data);

@@ -7,6 +7,7 @@ const check = require("express-validator");
 const nodemailer = require("nodemailer");
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
+var {expressjwt: jwtverify} = require("express-jwt")
 
 
 const saltRounds = 10;
@@ -14,6 +15,13 @@ app = express();
 app.use(cors());
 app.use(express.json());
 dotenv.config();
+app.use(
+  jwtverify({
+    secret: "yc@201",
+    algorithms: ["HS256"],
+  }).unless({ path: ["/token","/logIn","/signUp","/sql"] })
+);
+
 
 var connection = mysql.createConnection({
   host: "localhost",
@@ -173,6 +181,68 @@ app.post("/logIn", (req, res) => {
   });
   
 });
+
+
+
+
+app.get("/sql", (req, res) => {
+  let sql = "select * from user_message";
+
+  connection.query(sql, (err, result) => {
+    if (err) {
+      res.send("Error");
+    }
+    res.json({ result });
+  });
+});
+
+app.post("/sql", (req, res) => {
+  let data = req.body;
+  console.log(req);
+  console.log("sssssssss", req.body);
+  let sql = "insert into user_message(name, email, message) values(?,?,?)";
+  connection.query(sql, [data.name, data.mail, data.msg], (err, result) => {
+    if (err) {
+      res.send("Error");
+    }
+    console.log("!!!!!!!!!!", result);
+    res.json({ result });
+  });
+});
+
+
+
+app.put("/putData",(req,res)=>{
+  let data = req.body
+  console.log("Request",data.id);
+  console.log("!!!!!!Request");
+  let sql = "update user_message set name=?,email=?,message=? where id = "+data.id;
+
+  connection.query(sql,[data.name,data.mail,data.msg],(err, result) => {
+    if (err) {
+      console.log(err)
+      res.send("Error");
+    }
+    res.json({ result });
+  });
+})
+
+
+app.get("/getRecordById",(req,res)=>{
+  console.log("----------->",req.query.id);
+
+
+  let sql = "select * from user_message where id = "+req.query.id;
+
+  connection.query(sql, (err, result) => {
+    if (err) {
+      res.send("Error");
+    }
+    res.json({ result });
+  });
+
+})
+
 
 
 let PORT = process.env.PORT || 3012;
