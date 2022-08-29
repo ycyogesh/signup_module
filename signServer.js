@@ -70,8 +70,10 @@ function sendActive(mailId,token) {
     console.log("---------------->",info);
     if (error) {
       console.log(error);
+      return false;
     } else {
       console.log("Email sent: " + info.response);
+      return true;
     }
   });
 }
@@ -89,7 +91,7 @@ app.post("/signUp", (req, res) => {
     else if(result.length>0){
       console.log("Something went wrong!");
       // alert("Something went wrong!!");
-      res.send("Something went wrong!");
+      res.json("Something went wrong!");
     }
     else{
       var token=jwt.sign({email:data.email + parseInt(Math.random()*10)}, "Yc@12Yc", { expiresIn: '1800s' });
@@ -99,13 +101,18 @@ app.post("/signUp", (req, res) => {
         console.log("----------->");
         bcrypt.hash(data.pwd, salt, function (err, hash) {
           let sql = "insert into user(email,passwrd,token) values(?,?,?)";
-          connection.query(sql, [data.email, hash,token], (err, result) => {
+          connection.query(sql, [data.email, hash,token], async (err, result) => {
             if (err) {
               console.log("Error");
             }
-            sendActive(data.email,token);
+            let res = await sendActive(data.email,token);
+            if(res) {
             console.log("Succesfully Registered...");
             res.json({ result });
+            } else{
+              console.log("Nothing");
+              // res.json({'status':false})
+            }
           });
         });
       });
