@@ -79,9 +79,9 @@ app.post("/signUp", (req, res) => {
       console.error(err.stack);
     }
     else if(result.length>0){
-      console.log("Email Already Registered");
-      // alert("Email Already Registered!");
-      res.send("Email Already Registered")
+      console.log("Something went wrong!");
+      // alert("Something went wrong!!");
+      res.send("Something went wrong!");
     }
     else{
       var token=jwt.sign({email:data.email + parseInt(Math.random()*10)}, "Yc@12Yc", { expiresIn: '1800s' });
