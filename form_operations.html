@@ -75,8 +75,9 @@
     </div>
 
     <script>
-      var tokenNew = JSON.parse(window.localStorage.getItem('token'))
-      tokenNew = tokenNew.station
+      // var tokenNew = JSON.parse(window.localStorage.seItem('token'))
+      // tokenNew = tokenNew.station
+      var tokenNew = localStorage.token
       console.log("token--------->",tokenNew);
 
       var isPost = true;
@@ -97,6 +98,7 @@
             body: JSON.stringify(obj),
             headers: {
               "Content-Type": "application/json",
+              "Authorization" : "Bearer " + tokenNew
             },
           }).then((res) => {
             res.json().then((data) => console.log(data));
@@ -111,6 +113,7 @@
             body: JSON.stringify(obj),
             headers: {
               "Content-Type": "application/json",
+              "Authorization" : "Bearer" + tokenNew
             },
           }).then((res) => {
             res.json().then((data) => {

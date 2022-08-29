@@ -2,9 +2,17 @@ var express = require("express");
 var mysql = require("mysql");
 var cors = require("cors");
 var app = express();
+var {expressjwt: jwt} = require("express-jwt")
 
 app.use(cors());
 app.use(express.json());
+app.use(
+  jwt({
+    secret: "yc@201",
+    algorithms: ["HS256"],
+  }).unless({ path: ["/token"] })
+);
+
 
 var connection = mysql.createConnection({
   host: "localhost",
