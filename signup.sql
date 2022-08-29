@@ -13,4 +13,4 @@
 select * from user;
 -- delete from user where id= 3;
 select email from user;
-update user set token = null,is_verified = 1 where id = 4;
+-- update user set token = null,is_verified = 1 where id = 50;

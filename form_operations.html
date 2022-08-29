@@ -75,11 +75,15 @@
     </div>
 
     <script>
-        var isPost = true
+      var tokenNew = JSON.parse(window.localStorage.getItem('token'))
+      tokenNew = tokenNew.station
+      console.log("token--------->",tokenNew);
+
+      var isPost = true;
       function myFunPost() {
         let name = document.getElementById("username").value;
         let mail = document.getElementById("email").value;
-        let msg = document.getElementById("message").value;
+        let msg = document.getElementById("message").value;   
         let obj = {
           name: name,
           mail: mail,
@@ -87,42 +91,38 @@
         };
         // console.log('!!!!!!!!!!!!!', obj)
 
-        if(isPost) {
-
-            fetch("http://localhost:3003/sql", {
+        if (isPost) {
+          fetch("http://localhost:3003/sql", {
             method: "POST",
             body: JSON.stringify(obj),
             headers: {
-                "Content-Type": "application/json",
+              "Content-Type": "application/json",
             },
-            }).then((res) => {
+          }).then((res) => {
             res.json().then((data) => console.log(data));
-            });
+          });
         } else {
-            isPost = true
-            obj["id"] = document.getElementById("id").value;
+          isPost = true;
+          obj["id"] = document.getElementById("id").value;
 
-            console.log("!!!!!!!!",obj.id);
-            fetch("http://localhost:3003/putData", {
+          console.log("!!!!!!!!", obj.id);
+          fetch("http://localhost:3003/putData", {
             method: "PUT",
             body: JSON.stringify(obj),
             headers: {
-                "Content-Type": "application/json",
+              "Content-Type": "application/json",
             },
-            }).then((res) => {
+          }).then((res) => {
             res.json().then((data) => {
-                console.log("data-------->",data)
-            
-            
-            document.getElementById("username").value = " "
-            document.getElementById("email").value = " "
-            document.getElementById("message").value = " "
+              console.log("data-------->", data);
 
+              document.getElementById("username").value = " ";
+              document.getElementById("email").value = " ";
+              document.getElementById("message").value = " ";
 
-            myFunction()
+              myFunction();
             });
-            });
-            
+          });
         }
       }
 
@@ -160,11 +160,9 @@
       }
       myFunction();
 
-
-
       function editFun(id) {
-        document.getElementById("id").value = id
-        isPost = false
+        document.getElementById("id").value = id;
+        isPost = false;
         console.log("---", id);
         fetch("http://localhost:3003/getRecordById?id=" + id).then((res) => {
           res.json().then((data) => {
@@ -177,12 +175,12 @@
         });
       }
 
-
-
-
-      function deleteFun(id){
-
-      }
+      // function getTokenForm() {
+      //   let token = localStorage.getItem("token");
+      //   console.log("token--------->",token);
+      // }
+      // getTokenForm()
+      function deleteFun(id) {}
     </script>
   </body>
 </html>

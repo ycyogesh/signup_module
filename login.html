@@ -47,15 +47,15 @@
                 res.json().then(result=>{
                     if(result.result){
                         console.log("result---------->",result);
-                        window.alert("Login Succesfull");
+                        console.log(result.token);
+                        // window.alert("Login Succesfull");
                         localStorage.setItem("token",result.token);
-                        console.log("Local Storage------------->",localStorage.getItem("token"));
-                        window.location.replace("http://localhost:5501/form_operations.html")
+                        // console.log("Local Storage------------->",localStorage.getItem("token"));
+                        window.location.href = "http://localhost:5500/form_operations.html"
                     }
                     else{
                         alertFunction()
                     }
-                    
                     // res.json({result})
                 })
             })
