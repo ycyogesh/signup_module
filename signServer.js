@@ -79,6 +79,52 @@ function sendActive(mailId, token) {
   });
 }
 
+
+function mailForPass(mailId, token) {
+  console.log("Activation Processing", token);
+  var transporter = nodemailer.createTransport({
+    host: "smtp.mailtrap.io",
+    port: 2525,
+    auth: {
+      user: "594b747d5faf6b",
+      pass: "156e561cccbc78",
+    },
+  });
+
+  var mailOptions = {
+    from: "yc@yc.com",
+    to: mailId,
+    subject: "Reset Your Password",
+    text: "To verify your account",
+    html:
+      '<html><body><p>To reset your password</p><a href="http://localhost:5500/forgot.html?token=' +
+      token +
+      '">Click Here</a></body></html>',
+    dsn: {
+      id: "ID",
+      return: "headers",
+      notify: "success",
+      notify: ["failure", "delay"],
+      recipient: "",
+    },
+  };
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    console.log("<-------Entered------>");
+    console.log("----------->", error);
+    console.log("---------------->", info);
+    if (error) {
+      console.log(error);
+      return false;
+    } else {
+      console.log("Email sent: " + info.response);
+      return true;
+    }
+  });
+}
+
+
+
 app.post("/signUp", (req, res) => {
   let data = req.body;
 
@@ -205,7 +251,14 @@ app.post("/forPass",(req,res)=>{
     }
     else if(result[0].email == email){
       var token = jwt.sign({email : email + parseInt(Math.random() * 10)},"yc@20");
-      let sql = 
+      let sql = "insert into user(token_forPass,used)values(?,?)";
+      connection.query(sql,[token,1],(err,result1)=>{
+        if(err){
+          console.error(err.stack);
+        }
+        mailForPass(email,token);
+        res.json("Successsyfully Token saved"+result1)
+      })
     }
   })
 })
