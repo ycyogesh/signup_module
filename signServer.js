@@ -264,6 +264,19 @@ app.post("/forPass",(req,res)=>{
 })
 
 
+app.post("/chgPass",(req,res)=>{
+  let pass = req.body.pass
+  bcrypt.genSalt(saltRounds,(err,salt)=>{
+    bcrypt.hash(pass,salt,(err,hash)=>{
+      let sql = "update user set token_forPass = ? where";
+      connection.query(sql,[],(err,result2)=>{
+        
+      })
+    })
+  })
+})
+
+
 
 
 
