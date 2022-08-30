@@ -134,8 +134,8 @@ app.get("/token",(req,res)=>{
     }
     else{
       console.log("Token Matched----------->");
-      let sql1 = "update user set token = null,is_verified = 1 where id="+ "'" + result[0].id + "'";
-      connection.query(sql1,(err,result)=>{
+      let sql1 = "update user set token = null,is_verified = 1 where id=?";
+      connection.query(sql1,[result[0].id],(err,result)=>{
         if(err){
           console.error(err.stack);
         }
@@ -161,8 +161,8 @@ app.post("/logIn", (req, res) => {
   console.log("Password Entered", data.pwd);
 
   
-  let sql = "select passwrd from user where email=" + "'" + data.email + "'";
-  connection.query(sql, (err, result) => {
+  let sql = "select passwrd from user where email=?";
+  connection.query(sql,[data.email] ,(err, result) => {
     if (err) {
       console.error(err.stack);
     }
@@ -223,9 +223,9 @@ app.put("/putData",(req,res)=>{
   let data = req.body
   console.log("Request",data.id);
   console.log("!!!!!!Request");
-  let sql = "update user_message set name=?,email=?,message=? where id = "+data.id;
+  let sql = "update user_message set name=?,email=?,message=? where id = ?";
 
-  connection.query(sql,[data.name,data.mail,data.msg],(err, result) => {
+  connection.query(sql,[data.name,data.mail,data.msg,data.id],(err, result) => {
     if (err) {
       console.log(err)
       res.send("Error");
@@ -239,9 +239,9 @@ app.get("/getRecordById",(req,res)=>{
   console.log("----------->",req.query.id);
 
 
-  let sql = "select * from user_message where id = "+req.query.id;
+  let sql = "select * from user_message where id = ?";
 
-  connection.query(sql, (err, result) => {
+  connection.query(sql, [req.query.id],(err, result) => {
     if (err) {
       res.send("Error");
     }
