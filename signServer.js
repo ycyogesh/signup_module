@@ -161,18 +161,20 @@ app.post("/logIn", (req, res) => {
   console.log("Password Entered", data.pwd);
 
   
-  let sql = "select passwrd from user where email=?";
+  let sql = "select * from user where email=?";
   connection.query(sql,[data.email] ,(err, result) => {
     if (err) {
       console.error(err.stack);
     }
+    console.log("------------>",result);
 
     console.log("Password in Database", result[0].passwrd);
-    bcrypt.compare(data.pwd, result[0].passwrd, (err, result) => {
+    bcrypt.compare(data.pwd, result[0].passwrd, (err, result1) => {
       if(err){
         console.error(err.stack);
+        return
       }
-      else if (result) {
+      if (result[0].passwrd && result[0].is_verified==1) {
         console.log("Matched");
         let token = jwt.sign({email:data.email + parseInt(Math.random()*10)},"yc@201",{ expiresIn: '1800s' })
 
@@ -182,7 +184,7 @@ app.post("/logIn", (req, res) => {
 
       } else {
         console.log("Not Matched");
-        // res.send("Login Failed...")
+        // res.send("Something went wrong!...")
       }
     });
   });
