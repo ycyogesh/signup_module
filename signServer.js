@@ -257,6 +257,7 @@ app.post("/forPass",(req,res)=>{
           console.error(err.stack);
         }
         mailForPass(email,token);
+        localStorage.setItem("id",result[0].id)
         res.json("Successsyfully Token saved"+result1)
       })
     }
@@ -268,9 +269,11 @@ app.post("/chgPass",(req,res)=>{
   let pass = req.body.pass
   bcrypt.genSalt(saltRounds,(err,salt)=>{
     bcrypt.hash(pass,salt,(err,hash)=>{
-      let sql = "update user set token_forPass = ? where";
-      connection.query(sql,[],(err,result2)=>{
-        
+      let id = localStorage.getItem("id")
+      let sql = "update user set token_forPass = ? where id=?";
+      connection.query(sql,[hash,],(err,result2)=>{
+        console.log("Succesfully updated",result2);
+        res.json(true)
       })
     })
   })
