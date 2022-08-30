@@ -26,3 +26,11 @@ body{
     margin-bottom: 50px;
     margin-top: 50px;
 }
+a{
+    text-decoration: none;
+    color: black;
+    margin-top: 10px;
+}
+a:hover{
+    color:aliceblue;
+}

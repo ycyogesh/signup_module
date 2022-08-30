@@ -1,4 +1,5 @@
 
+
 -- use crud; 
 -- create table user(id int(11) primary key not null auto_increment,
 -- email varchar(255),
@@ -15,3 +16,7 @@ select * from user;
 -- delete from user where id= 3;
 select email from user;
 -- update user set token = null,is_verified = 1 where id = 50;
+-- ALTER TABLE user
+-- ADD token_forPass varchar(255);
+-- ALTER TABLE user
+-- ADD used int(11);

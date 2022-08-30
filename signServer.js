@@ -191,6 +191,29 @@ app.post("/logIn", (req, res) => {
   });
 });
 
+
+app.post("/forPass",(req,res)=>{
+  let email = req.body.email
+  console.log("mail-------->",email);
+  let sql = "select * from user where email =?"
+  connection.query(sql,[email],(err,result)=>{
+    if(err){
+      console.error(err.stack);
+    }
+    else if(result[0].email != email){
+      console.log("Something went wrong!");
+    }
+    else if(result[0].email == email){
+      var token = jwt.sign({email : email + parseInt(Math.random() * 10)},"yc@20");
+      let sql = 
+    }
+  })
+})
+
+
+
+
+
 app.get("/sql", (req, res) => {
   let sql = "select * from user_message";
 
