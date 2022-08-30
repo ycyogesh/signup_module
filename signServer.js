@@ -83,8 +83,8 @@ app.post("/signUp", (req, res) => {
 
 
   
-  let sqlCheck = "select email from user where email =" + "'" + data.email + "'";
-  connection.query(sqlCheck,(err,result)=>{
+  let sqlCheck = "select email from user where email =?";
+  connection.query(sqlCheck,[data.email],(err,result)=>{
     if(err){
       console.error(err.stack);
     }
