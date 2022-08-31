@@ -278,7 +278,7 @@ app.post("/chgPass",(req,res)=>{
   bcrypt.genSalt(saltRounds,(err,salt)=>{
     bcrypt.hash(pass,salt,(err,hash)=>{
       // let id = localStorage.id
-      let sql = "select "
+      // let sql = "select "
       let sql = "update user set passwrd=? token_forPass =null used=1 where id=?";
       connection.query(sql,[hash,id],(err,result2)=>{
         console.log("Succesfully updated",result2);

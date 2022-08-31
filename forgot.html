@@ -13,7 +13,9 @@
             <input type="email" name="email" id="email" value=""><br><br>
             <input type="button" value="Submit" onclick="forPass()">
         </form>
+        <h3 id="check"></h3>
     </div>
+    
 
 
 
@@ -34,6 +36,8 @@
                     if(result.result){
                     localStorage.setItem("id",result.id)
                     console.log("result------>",result);
+                    document.getElementById("check").innerText = "Check your mail to reset your password"
+                    console.log("Check your mail to reset your password");
                     // window.location.href = "http://127.0.0.1:5500/password.html"
                     }
                     else{
