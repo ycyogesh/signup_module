@@ -97,7 +97,7 @@ function mailForPass(mailId, token) {
     subject: "Reset Your Password",
     text: "To verify your account",
     html:
-      '<html><body><p>To reset your password</p><a href="http://localhost:5500/forgot.html?token=' +
+      '<html><body><p>To reset your password</p><a href="http://localhost:5500/password.html?token=' +
       token +
       '">Click Here</a></body></html>',
     dsn: {
@@ -251,8 +251,8 @@ app.post("/forPass",(req,res)=>{
     }
     else if(result[0].email == email){
       var token = jwt.sign({email : email + parseInt(Math.random() * 10)},"yc@20");
-      let sql = "insert into user(token_forPass)values(?)";
-      connection.query(sql,[token],(err,result1)=>{
+      let sql = "update user set token_forPass=?, used=1 where id=?";
+      connection.query(sql,[token,result.id],(err,result1)=>{
         if(err){
           console.error(err.stack);
         }
@@ -279,8 +279,12 @@ app.post("/chgPass",(req,res)=>{
     bcrypt.hash(pass,salt,(err,hash)=>{
       // let id = localStorage.id
       // let sql = "select "
-      let sql = "update user set passwrd=? token_forPass =null used=1 where id=?";
+      console.log("hashhhhhhhhh",hash);
+      let sql = "update user set passwrd=?,token_forPass =null,used=0 where id=?";
       connection.query(sql,[hash,id],(err,result2)=>{
+        if(err){
+          console.error(err.stack);
+        }
         console.log("Succesfully updated",result2);
         res.json(true)
       })
