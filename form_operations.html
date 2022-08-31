@@ -45,6 +45,11 @@
     />
   </head>
   <body>
+    <div class="row">
+      <div style="display: flex;justify-content: end;" class="col-12">
+        <button type="button"><a style="text-decoration: none;color: deeppink;" href="./login.html" onclick="logout()">Logout</a></button>
+      </div>
+    </div>
     <div class="container">
       <form action="">
         Name :
@@ -188,6 +193,9 @@
       //   console.log("token--------->",token);
       // }
       // getTokenForm()
+      function logout(){
+        window.alert("Logged Out Successfully")
+      }
       function deleteFun(id) {}
     </script>
   </body>
