@@ -31,7 +31,15 @@
                 },
             }).then(res=>{
                 res.json().then(result=>{
+                    if(result.result){
+                    localStorage.setItem("id",result.id)
                     console.log("result------>",result);
+                    // window.location.href = "http://127.0.0.1:5500/password.html"
+                    }
+                    else{
+                        console.log("Something went wrong!");
+                    }
+                    
                 })
             })
         }

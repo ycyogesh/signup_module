@@ -18,7 +18,7 @@ app.use(
   jwtverify({
     secret: "yc@201",
     algorithms: ["HS256"],
-  }).unless({ path: ["/token", "/logIn", "/signUp", "/sql"] })
+  }).unless({ path: ["/token", "/logIn", "/signUp", "/sql","/forPass","/chgPass"] })
 );
 
 var connection = mysql.createConnection({
@@ -251,15 +251,22 @@ app.post("/forPass",(req,res)=>{
     }
     else if(result[0].email == email){
       var token = jwt.sign({email : email + parseInt(Math.random() * 10)},"yc@20");
-      let sql = "insert into user(token_forPass,used)values(?,?)";
-      connection.query(sql,[token,1],(err,result1)=>{
+      let sql = "insert into user(token_forPass)values(?)";
+      connection.query(sql,[token],(err,result1)=>{
         if(err){
           console.error(err.stack);
         }
         mailForPass(email,token);
-        localStorage.setItem("id",result[0].id)
-        res.json("Successsyfully Token saved"+result1)
+        // localStorage.setItem("id",result[0].id)
+        console.log("inserted",result1);
+        res.json({
+          'result' : true,
+          'id' : result[0].id
+        })
       })
+    }
+    else{
+      console.log("Something went wrong!");
     }
   })
 })
@@ -267,11 +274,13 @@ app.post("/forPass",(req,res)=>{
 
 app.post("/chgPass",(req,res)=>{
   let pass = req.body.pass
+  let id = req.body.id
   bcrypt.genSalt(saltRounds,(err,salt)=>{
     bcrypt.hash(pass,salt,(err,hash)=>{
-      let id = localStorage.getItem("id")
-      let sql = "update user set token_forPass = ? where id=?";
-      connection.query(sql,[hash,],(err,result2)=>{
+      // let id = localStorage.id
+      let sql = "select "
+      let sql = "update user set passwrd=? token_forPass =null used=1 where id=?";
+      connection.query(sql,[hash,id],(err,result2)=>{
         console.log("Succesfully updated",result2);
         res.json(true)
       })

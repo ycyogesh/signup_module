@@ -11,7 +11,7 @@
 -- updated_by int(11),
 -- created_at datetime default current_timestamp,
 -- updated_at datetime);
--- desc user;
+-- desc user; 
 select * from user;
 -- delete from user where id= 3;
 select email from user;
@@ -20,3 +20,6 @@ select email from user;
 -- ADD token_forPass varchar(255);
 -- ALTER TABLE user
 -- ADD used int(11);
+
+-- ALTER TABLE user
+-- ALTER used SET DEFAULT 0;
