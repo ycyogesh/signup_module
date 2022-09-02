@@ -34,13 +34,14 @@
             }).then(res=>{
                 res.json().then(result=>{
                     if(result.result){
-                    localStorage.setItem("id",result.id)
+                    localStorage.setItem("token",result.token);
+                    console.log("getttttttttttttttt",localStorage.getItem("token"));
                     console.log("result------>",result);
                     document.getElementById("check").innerText = "Check your mail to reset your password"
                     console.log("Check your mail to reset your password");
-                    // window.location.href = "http://127.0.0.1:5500/password.html"
+                    // window.location.href = "http://localhost:5500/password.html"
                     }
-                    else{
+                    else{   
                         console.log("Something went wrong!");
                     }
                     

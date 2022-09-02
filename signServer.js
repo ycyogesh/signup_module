@@ -259,7 +259,6 @@ app.post("/forPass", (req, res) => {
         console.log("inserted", result1);
         res.json({
           'result': true,
-          // 'id': result[0].id,
           'token' : token
         });
       });
@@ -276,8 +275,7 @@ app.post("/chgPass", (req, res) => {
   console.log("resquest body-------->",req.body);
   bcrypt.genSalt(saltRounds, (err, salt) => {
     bcrypt.hash(pass, salt, (err, hash) => {
-      // let id = localStorage.id
-      // let sql = "select "
+
       console.log("hashhhhhhhhh", hash);
       let sql = "select id from user where token_forPass =?";
       connection.query(sql, [token], (err, restult3) => {
