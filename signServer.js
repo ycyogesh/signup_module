@@ -18,7 +18,7 @@ app.use(
   jwtverify({
     secret: "yc@201",
     algorithms: ["HS256"],
-  }).unless({ path: ["/token", "/logIn", "/signUp","/forPass","/chgPass"] })
+  }).unless({ path: ["/token", "/logIn", "/signUp", "/forPass", "/chgPass"] })
 );
 
 var connection = mysql.createConnection({
@@ -79,7 +79,6 @@ function sendActive(mailId, token) {
   });
 }
 
-
 function mailForPass(mailId, token) {
   console.log("Activation Processing", token);
   var transporter = nodemailer.createTransport({
@@ -122,8 +121,6 @@ function mailForPass(mailId, token) {
     }
   });
 }
-
-
 
 app.post("/signUp", (req, res) => {
   let data = req.body;
@@ -237,64 +234,67 @@ app.post("/logIn", (req, res) => {
   });
 });
 
-
-app.post("/forPass",(req,res)=>{
-  let email = req.body.email
-  console.log("mail-------->",email);
-  let sql = "select * from user where email =?"
-  connection.query(sql,[email],(err,result)=>{
-    if(err){
+app.post("/forPass", (req, res) => {
+  let email = req.body.email;
+  console.log("mail-------->", email);
+  let sql = "select * from user where email =?";
+  connection.query(sql, [email], (err, result) => {
+    console.log("resultttttttttttttt->>>>>",result);
+    if (err) {
       console.error(err.stack);
-    }
-    else if(result[0].email != email){
+    } else if (result[0].email != email) {
       console.log("Something went wrong!");
-    }
-    else if(result[0].email == email){
-      var token = jwt.sign({email : email + parseInt(Math.random() * 10)},"yc@20");
+    } else if (result[0].email == email) {
+      var token = jwt.sign(
+        { email: email + parseInt(Math.random() * 10) },
+        "yc@20"
+      );
       let sql = "update user set token_forPass=?, used=1 where id=?";
-      connection.query(sql,[token,result.id],(err,result1)=>{
-        if(err){
+      connection.query(sql, [token, result.id], (err, result1) => {
+        if (err) {
           console.error(err.stack);
         }
-        mailForPass(email,token);
+        mailForPass(email, token);
         // localStorage.setItem("id",result[0].id)
-        console.log("inserted",result1);
+        console.log("inserted", result1);
         res.json({
-          'result' : true,
-          'id' : result[0].id
-        })
-      })
-    }
-    else{
+          'result': true,
+          // 'id': result[0].id,
+          'token' : token
+        });
+      });
+      
+    } else {
       console.log("Something went wrong!");
     }
-  })
-})
+  });
+});
 
-
-app.post("/chgPass",(req,res)=>{
-  let pass = req.body.pass
-  let id = req.body.id
-  bcrypt.genSalt(saltRounds,(err,salt)=>{
-    bcrypt.hash(pass,salt,(err,hash)=>{
+app.post("/chgPass", (req, res) => {
+  let pass = req.body.pass;
+  let token = req.body.token
+  console.log("resquest body-------->",req.body);
+  bcrypt.genSalt(saltRounds, (err, salt) => {
+    bcrypt.hash(pass, salt, (err, hash) => {
       // let id = localStorage.id
       // let sql = "select "
-      console.log("hashhhhhhhhh",hash);
-      let sql = "update user set passwrd=?,token_forPass =null,used=0 where id=?";
-      connection.query(sql,[hash,id],(err,result2)=>{
-        if(err){
-          console.error(err.stack);
-        }
-        console.log("Succesfully updated",result2);
-        res.json(true)
-      })
-    })
-  })
-})
-
-
-
-
+      console.log("hashhhhhhhhh", hash);
+      let sql = "select id from user where token_forPass =?";
+      connection.query(sql, [token], (err, restult3) => {
+        console.log("result---------3>",restult3);
+        let sql =
+          "update user set passwrd=?,token_forPass=null,used=0 where id=?";
+        connection.query(sql, [hash, restult3.id], (err, result2) => {
+          if (err) {
+            console.error(err.stack);
+          }
+          console.log("Succesfully updated", result2);
+          res.json(true);
+        });
+      });
+    });
+  });
+});
 
 app.get("/sql", (req, res) => {
   let sql = "select * from user_message";
