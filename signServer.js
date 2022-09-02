@@ -18,7 +18,7 @@ app.use(
   jwtverify({
     secret: "yc@201",
     algorithms: ["HS256"],
-  }).unless({ path: ["/token", "/logIn", "/signUp", "/sql","/forPass","/chgPass"] })
+  }).unless({ path: ["/token", "/logIn", "/signUp","/forPass","/chgPass"] })
 );
 
 var connection = mysql.createConnection({
@@ -307,7 +307,7 @@ app.get("/sql", (req, res) => {
   });
 });
 
-app.post("/sql", (req, res) => {
+app.post("/submitData", (req, res) => {
   let data = req.body;
   console.log(req);
   console.log("sssssssss", req.body);
