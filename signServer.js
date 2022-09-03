@@ -197,8 +197,6 @@ app.get("/token", (req, res) => {
       res.send(false)
     }
   });
-  
-  // res.send(token)
 });
 
 
