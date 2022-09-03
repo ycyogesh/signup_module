@@ -329,6 +329,17 @@ app.post("/chgPass", (req, res) => {
   });
 });
 
+
+
+
+
+
+//-------------------------------VIEW LIST------------------------------//
+
+
+
+
+
 app.get("/sql", (req, res) => {
   let sql = "select * from user_message";
 
@@ -339,6 +350,14 @@ app.get("/sql", (req, res) => {
     res.json({ result });
   });
 });
+
+
+
+
+//-------------------------------SUBMIT DATA------------------------------//
+
+
+
 
 app.post("/submitData", (req, res) => {
   let data = req.body;
@@ -353,6 +372,14 @@ app.post("/submitData", (req, res) => {
     res.json({ result });
   });
 });
+
+
+
+
+//-------------------------------UPDATE DATA------------------------------//
+
+
+
 
 app.put("/putData", (req, res) => {
   let data = req.body;
@@ -373,6 +400,14 @@ app.put("/putData", (req, res) => {
   );
 });
 
+
+
+
+//-------------------------------GET RECORD FOR BINDING-----------------------------//
+
+
+
+
 app.get("/getRecordById", (req, res) => {
   console.log("----------->", req.query.id);
 
@@ -385,6 +420,12 @@ app.get("/getRecordById", (req, res) => {
     res.json({ result });
   });
 });
+
+
+
+//-------------------------------RUNNING SERVER------------------------------//
+
+
 
 let PORT = process.env.PORT || 3012;
 

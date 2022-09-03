@@ -80,8 +80,6 @@
     </div>
 
     <script>
-      // var tokenNew = JSON.parse(window.localStorage.seItem('token'))
-      // tokenNew = tokenNew.station
       var tokenNew = localStorage.token
       console.log("token--------->",tokenNew);
 
@@ -96,6 +94,11 @@
           msg: msg,
         };
         // console.log('!!!!!!!!!!!!!', obj)
+
+
+//-------------------------------SUBMIT & UPDATE-----------------------------//
+
+
 
         if (isPost) {
           fetch("http://localhost:3012/submitData", {
@@ -133,6 +136,10 @@
           });
         }
       }
+
+
+//-------------------------------VIEW LIST------------------------------//
+
 
       function myFunction() {
         fetch("http://localhost:3012/sql",{
@@ -173,6 +180,11 @@
       }
       myFunction();
 
+
+//-------------------------------EDIT FUNCTION------------------------------//
+
+
+
       function editFun(id) {
         document.getElementById("id").value = id;
         isPost = false;
@@ -198,6 +210,11 @@
       //   console.log("token--------->",token);
       // }
       // getTokenForm()
+
+
+//-------------------------------LOGOUT------------------------------//
+
+
       function logout(){
         tokenNew = " "
         localStorage.clear();
