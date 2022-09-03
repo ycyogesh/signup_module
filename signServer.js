@@ -175,7 +175,9 @@ app.post("/signUp", (req, res) => {
   });
 });
 
+
 //-------------------------------VERIFY TOKEN------------------------------//
+
 
 app.get("/token", (req, res) => {
   let token = req.query.token;
@@ -226,6 +228,7 @@ app.post("/logIn", (req, res) => {
       bcrypt.compare(data.pwd, result[0].passwrd, (err, result1) => {
         if (err) {
           console.error(err.stack);
+          res.send("Error")
           return;
         } else if (result1) {
           if (result[0].is_verified == 1) {
