@@ -82,6 +82,7 @@ function sendActive(mailId, token) {
 }
 
 function mailForPass(mailId, token) {
+  return new Promise((resolve, reject)=>{
   console.log("Activation Processing", token);
   var transporter = nodemailer.createTransport({
     host: "smtp.mailtrap.io",
@@ -116,12 +117,13 @@ function mailForPass(mailId, token) {
     console.log("---------------->", info);
     if (error) {
       console.log(error);
-      return false;
+      reject(false);
     } else {
       console.log("Email sent: " + info.response);
-      return true;
+      resolve(true);
     }
   });
+})
 }
 
 //-------------------------------SIGNUP------------------------------//
@@ -193,7 +195,7 @@ app.get("/token", (req, res) => {
         res.send(result.protocol41); //true
       });
     }
-    else{
+    else{d
       res.send(false)
     }
   });
@@ -276,16 +278,19 @@ app.post("/forPass", (req, res) => {
       );
       console.log("token new---------------->",token);
       let sql = "update user set token_forPass=? where id=?";
-      connection.query(sql, [token,result[0].id], (err, result1) => {
+      connection.query(sql, [token,result[0].id],async (err, result1) => {
         if (err) {
           console.error(err.stack);
         }
-        mailForPass(email, token);
-        console.log("inserted", result1);
-        res.json({
+        resp = await mailForPass(email, token);
+        if(resp){
+          console.log("inserted", result1);
+          res.json({
           result: true,
           token: token,
         });
+        }
+        res.json({result : false})
       });
     } else {
       console.log("Something went wrong!");
