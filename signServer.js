@@ -196,7 +196,13 @@ app.get("/token", (req, res) => {
   // res.send(token)
 });
 
+
+
+
 //-------------------------------LOGIN------------------------------//
+
+
+
 
 app.post("/logIn", (req, res) => {
   let data = req.body;
@@ -239,6 +245,15 @@ app.post("/logIn", (req, res) => {
   });
 });
 
+
+
+
+//-------------------------------FORGOT PASSWORD------------------------------//
+//---------------------------------VERIFY MAIL-------------------------------//
+
+
+
+
 app.post("/forPass", (req, res) => {
   let email = req.body.email;
   console.log("mail-------->", email);
@@ -250,17 +265,19 @@ app.post("/forPass", (req, res) => {
     } else if (result[0].email != email) {
       console.log("Something went wrong!");
     } else if (result[0].email == email) {
+      console.log("Mail Matched");
+      // var count = result[0].used
       var token = jwt.sign(
         { email: email + parseInt(Math.random() * 10) },
         "yc@20"
       );
-      let sql = "update user set token_forPass=?, used=1 where id=?";
-      connection.query(sql, [token, result.id], (err, result1) => {
+      console.log("token new---------------->",token);
+      let sql = "update user set token_forPass=? where id=?";
+      connection.query(sql, [token,result[0].id], (err, result1) => {
         if (err) {
           console.error(err.stack);
         }
         mailForPass(email, token);
-        // localStorage.setItem("id",result[0].id)
         console.log("inserted", result1);
         res.json({
           result: true,
@@ -273,19 +290,32 @@ app.post("/forPass", (req, res) => {
   });
 });
 
+
+
+
+
+//-------------------------------SET NEW PASSWORD------------------------------//
+
+
+
+
+
 app.post("/chgPass", (req, res) => {
   let pass = req.body.pass;
   let token = req.body.token;
-  console.log("resquest body-------->", req.body);
+  console.log("request body-------->", req.body);
   bcrypt.genSalt(saltRounds, (err, salt) => {
     bcrypt.hash(pass, salt, (err, hash) => {
       console.log("hashhhhhhhhh", hash);
-      let sql = "select id from user where token_forPass =?";
-      connection.query(sql, [token], (err, restult3) => {
-        console.log("result---------3>", restult3);
+      let sql = "select * from user where token_forPass =?";
+      connection.query(sql, [token], (err, result3) => {
+        if(err){
+          console.error(err.stack);
+        }
+        console.log("result---------3>", result3);
         let sql =
           "update user set passwrd=?,token_forPass=null,used=0 where id=?";
-        connection.query(sql, [hash, restult3.id], (err, result2) => {
+        connection.query(sql, [hash, result3[0].id], (err, result2) => {
           if (err) {
             console.error(err.stack);
           }
