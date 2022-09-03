@@ -37,6 +37,7 @@ connection.connect(function (err) {
 });
 
 function sendActive(mailId, token) {
+  return new Promise((resolve, reject)=>{
   console.log("Activation Processing", token);
   var transporter = nodemailer.createTransport({
     host: "smtp.mailtrap.io",
@@ -71,12 +72,13 @@ function sendActive(mailId, token) {
     console.log("---------------->", info);
     if (error) {
       console.log(error);
-      return false;
+      reject(false);
     } else {
       console.log("Email sent: " + info.response);
-      return true;
+      resolve(true);
     }
   });
+})
 }
 
 function mailForPass(mailId, token) {
