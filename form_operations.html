@@ -160,7 +160,7 @@
                 result[i].id +
                 ')"><i class="fa-solid fa-pen-to-square"></i></button>';
               is_delete =
-                '<button type="button" class="btn btn-danger" onclick="deleteFun()"><i class="fa-solid fa-trash"></i></button>';
+                '<button type="button" class="btn btn-danger" onclick="deleteFun('+result[i].id+')"><i class="fa-solid fa-trash"></i></button>';
               html +=
                 "<tr><td>" +
                 result[i].name +
@@ -212,6 +212,24 @@
       // getTokenForm()
 
 
+//-------------------------------DELETE FUNCTION------------------------------//
+
+
+
+
+      function deleteFun(idNew) {
+        let id = idNew;
+        fetch("http://localhost:3012/isDelete",{
+          method : "POST",
+          
+        })
+      }
+
+
+
+
+
+
 //-------------------------------LOGOUT------------------------------//
 
 
@@ -220,7 +238,7 @@
         localStorage.clear();
         window.alert("Logged Out Successfully")
       }
-      function deleteFun(id) {}
+      
     </script>
   </body>
 </html>

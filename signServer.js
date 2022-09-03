@@ -178,23 +178,26 @@ app.post("/signUp", (req, res) => {
 app.get("/token", (req, res) => {
   let token = req.query.token;
   console.log("query----------->", req.query);
-  let sql = "select id from user where token =?";
+  let sql = "select * from user where token =?";
   connection.query(sql, [token], (err, result) => {
     console.log("result------------>", result[0].id);
     if (err) {
       console.error(err.stack);
-    } else {
+    } else if(result[0].token==token) {
       console.log("Token Matched----------->");
       let sql1 = "update user set token = null,is_verified = 1 where id=?";
       connection.query(sql1, [result[0].id], (err, result) => {
         if (err) {
           console.error(err.stack);
         }
-        res.send(result.protocol41);
+        res.send(result.protocol41); //true
       });
     }
+    else{
+      res.send(false)
+    }
   });
-
+  
   // res.send(token)
 });
 
