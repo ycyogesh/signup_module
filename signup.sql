@@ -1,5 +1,3 @@
-
-
 -- use crud; 
 -- create table user(id int(11) primary key not null auto_increment,
 -- email varchar(255),
@@ -26,3 +24,7 @@ select email from user;
 
 -- ALTER TABLE user
 -- ADD loginCount int(11);
+
+-- ALTER TABLE user
+-- ALTER loginCount SET DEFAULT 0;
+

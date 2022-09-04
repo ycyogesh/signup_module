@@ -8,8 +8,10 @@ const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 var { expressjwt: jwtverify } = require("express-jwt");
+const rateLimit = require('express-rate-limit')
 
 const saltRounds = 10;
+var count;
 app = express();
 app.use(cors());
 app.use(express.json());
@@ -20,6 +22,18 @@ app.use(
     algorithms: ["HS256"],
   }).unless({ path: ["/token", "/logIn", "/signUp", "/forPass", "/chgPass"] })
 );
+
+const checktLimiter = rateLimit({
+	windowMs: 1440 * 60 * 1000, // 24 hour
+	max: 5, // Limit each IP to 5 create account requests per `window` (here, per hour)
+	message:
+		'Something went wrong', // Try Again Tomorrow
+	standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  
+})
+
+app.use('/api', checktLimiter)
 
 // MYSQL CONNECTION
 
@@ -211,7 +225,7 @@ app.get("/token", (req, res) => {
 // LOGIN
 
 
-app.post("/logIn", (req, res) => {
+app.post("/logIn", checktLimiter,(req, res) => {
   let data = req.body;
   console.log(data);
   console.log("Password Entered", data.pwd);
@@ -223,7 +237,7 @@ app.post("/logIn", (req, res) => {
       if (err) {
         console.error(err.stack);
         res.send("Error");
-      } else if (result[0].is_verified == 1) {
+      } else if (result[0].is_verified == 1 && result[0].loginCount<4) {
         console.log("Password in Database", result[0].passwrd);
         bcrypt.compare(data.pwd, result[0].passwrd, (err, result1) => {
           if (err) {
@@ -237,7 +251,17 @@ app.post("/logIn", (req, res) => {
                 { email: data.email + parseInt(Math.random() * 10) },
                 "yc@201"
               );
-
+              // let count = result[0].loginCount
+              //   let sql = "update user set loginCount =? where id=?"
+              //   connection.query(sql,[count+1,result[0].id],(err,result4)=>{
+              //     if(err){
+              //       console.error("Update part Error",err.stack);
+              //       res.send("Error");
+              //     }
+              //     else{
+              //       console.log("Updated Successfully!",result4);
+              //     }
+              //   })
               res.json({ result: result, token: token });
             }
           } else {
@@ -255,15 +279,17 @@ app.post("/logIn", (req, res) => {
   });
 });
 
+
 // FORGOT PASSWORD
 // VERIFY MAIL
 
-app.post("/forPass", (req, res) => {
+
+app.post("/forPass", checktLimiter,(req, res) => {
   let email = req.body.email;
   console.log("mail-------->", email);
   let sql = "select * from user where email =?";
   connection.query(sql, [email], (err, result) => {
-    console.log("resultttttttttttttt->>>>>", result);
+    console.log("resultttttttttttttt--->>>>>", result);
     if (err) {
       console.error(err.stack);
     } else if (result[0].email != email) {
@@ -297,7 +323,9 @@ app.post("/forPass", (req, res) => {
   });
 });
 
+
 // SET NEW PASSWORD
+
 
 app.post("/chgPass", (req, res) => {
   let pass = req.body.pass;

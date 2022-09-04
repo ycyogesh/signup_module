@@ -1,73 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body class="lbody">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"
+    ></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="lbody">
     <div class="container c1">
-        <div>
-            <div class="row sRow">
-                <h1>Login</h1>
-            </div>
-            <div class="row formRow">
-                <form action="" class="forms">
-                    <label for="name">Email</label>
-                    <input type="email" name="email" id="email" value=""><br><br>
-                    <label for="pass">Password</label>
-                    <input type="password" name="password" id="pwd" value=""><br><br>
-                    <input type="button" value="Login" onclick="logIn()">
-                    <a href="./forgot.html">Forgot Password?</a>
-                </form>
-            </div>
+      <div>
+        <div class="row sRow">
+          <h1>Login</h1>
         </div>
+        <div class="row formRow">
+          <form action="" class="forms">
+            <label for="name">Email</label>
+            <input type="email" name="email" id="email" value="" /><br /><br />
+            <label for="pass">Password</label>
+            <input
+              type="password"
+              name="password"
+              id="pwd"
+              value=""
+            /><br /><br />
+            <input type="button" value="Login" onclick="logIn()" />
+            <a href="./forgot.html">Forgot Password?</a>
+          </form>
+        </div>
+      </div>
     </div>
 
     <script>
-
-        function logIn(){
-            let mail = document.getElementById("email").value
-            let passwrd = document.getElementById("pwd").value
-            console.log("mail & pwd-------->",mail,passwrd);
-            let user = {
-                'email' : mail,
-                'pwd' : passwrd
-            }
-            fetch("http://localhost:3012/logIn",{
-                method : "POST",
-                body : JSON.stringify(user),
-                headers : {
-                    "Content-Type" : "application/json",
-                },
-            }).then(res=>{
-                res.json().then(result=>{
-                    if(result.result){
-                        console.log("result---------->",result);
-                        console.log(result.token);
-                        window.alert("Login Succesfull");
-                        localStorage.setItem("token",result.token);
-                        // console.log("Local Storage------------->",localStorage.getItem("token"));
-                        window.location.href = "http://localhost:5500/form_operations.html"
-                    }
-                    else{
-                        alertFunction()
-                    }
-                    // res.json({result})
-                })
-            })
+      function logIn() {
+        let mail = document.getElementById("email").value;
+        let passwrd = document.getElementById("pwd").value;
+        console.log("mail & pwd-------->", mail, passwrd);
+        let user = {
+          email: mail,
+          pwd: passwrd,
         };
+        fetch("http://localhost:3012/logIn", {
+          method: "POST",
+          body: JSON.stringify(user),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+          .then((res) => {
+            res.json().then((result) => {
+              if (result.result) {
+                console.log("result---------->", result);
+                console.log(result.token);
+                window.alert("Login Succesfull");
+                localStorage.setItem("token", result.token);
+                // console.log("Local Storage------------->",localStorage.getItem("token"));
+                window.location.href =
+                  "http://localhost:5500/form_operations.html";
+              } else {
+                alertFunction();
+              }
+              // res.json({result})
+            });
+          })
+          .catch((err) => {
+            console.log(err, err.data);
+          });
+      }
 
-        function alertFunction(){
-            window.alert("Something went wrong!");
-        }
-
+      function alertFunction() {
+        window.alert("Something went wrong!");
+      }
     </script>
-
-
-</body>
+  </body>
 </html>
