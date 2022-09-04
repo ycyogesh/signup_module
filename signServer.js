@@ -21,6 +21,8 @@ app.use(
   }).unless({ path: ["/token", "/logIn", "/signUp", "/forPass", "/chgPass"] })
 );
 
+// MYSQL CONNECTION
+
 var connection = mysql.createConnection({
   host: "localhost",
   user: "nodejs",
@@ -36,97 +38,101 @@ connection.connect(function (err) {
   console.log("connected as id :", +connection.threadId);
 });
 
+// SIGNUP ACTIVATION MAIL FUNCTION
+
 function sendActive(mailId, token) {
-  return new Promise((resolve, reject)=>{
-  console.log("Activation Processing", token);
-  var transporter = nodemailer.createTransport({
-    host: "smtp.mailtrap.io",
-    port: 2525,
-    auth: {
-      user: "594b747d5faf6b",
-      pass: "156e561cccbc78",
-    },
-  });
+  return new Promise((resolve, reject) => {
+    console.log("Activation Processing", token);
+    var transporter = nodemailer.createTransport({
+      host: "smtp.mailtrap.io",
+      port: 2525,
+      auth: {
+        user: "594b747d5faf6b",
+        pass: "156e561cccbc78",
+      },
+    });
 
-  var mailOptions = {
-    from: "yc@yc.com",
-    to: mailId,
-    subject: "Verify Your Account",
-    text: "To verify your account",
-    html:
-      '<html><body><p>To verify your account</p><a href="http://localhost:5500/token.html?token=' +
-      token +
-      '">Click Here</a></body></html>',
-    dsn: {
-      id: "ID",
-      return: "headers",
-      notify: "success",
-      notify: ["failure", "delay"],
-      recipient: "",
-    },
-  };
+    var mailOptions = {
+      from: "yc@yc.com",
+      to: mailId,
+      subject: "Verify Your Account",
+      text: "To verify your account",
+      html:
+        '<html><body><p>To verify your account</p><a href="http://localhost:5500/token.html?token=' +
+        token +
+        '">Click Here</a></body></html>',
+      dsn: {
+        id: "ID",
+        return: "headers",
+        notify: "success",
+        notify: ["failure", "delay"],
+        recipient: "",
+      },
+    };
 
-  transporter.sendMail(mailOptions, function (error, info) {
-    console.log("<-------Entered------>");
-    console.log("----------->", error);
-    console.log("---------------->", info);
-    if (error) {
-      console.log(error);
-      reject(false);
-    } else {
-      console.log("Email sent: " + info.response);
-      resolve(true);
-    }
+    transporter.sendMail(mailOptions, function (error, info) {
+      console.log("<-------Entered------>");
+      console.log("----------->", error);
+      console.log("---------------->", info);
+      if (error) {
+        console.log(error);
+        reject(false);
+      } else {
+        console.log("Email sent: " + info.response);
+        resolve(true);
+      }
+    });
   });
-})
 }
+
+// FORGOT PASSWORD MAIL FUNCTION
 
 function mailForPass(mailId, token) {
-  return new Promise((resolve, reject)=>{
-  console.log("Activation Processing", token);
-  var transporter = nodemailer.createTransport({
-    host: "smtp.mailtrap.io",
-    port: 2525,
-    auth: {
-      user: "594b747d5faf6b",
-      pass: "156e561cccbc78",
-    },
-  });
+  return new Promise((resolve, reject) => {
+    console.log("Activation Processing", token);
+    var transporter = nodemailer.createTransport({
+      host: "smtp.mailtrap.io",
+      port: 2525,
+      auth: {
+        user: "594b747d5faf6b",
+        pass: "156e561cccbc78",
+      },
+    });
 
-  var mailOptions = {
-    from: "yc@yc.com",
-    to: mailId,
-    subject: "Reset Your Password",
-    text: "To verify your account",
-    html:
-      '<html><body><p>To reset your password</p><a href="http://localhost:5500/password.html?token=' +
-      token +
-      '">Click Here</a></body></html>',
-    dsn: {
-      id: "ID",
-      return: "headers",
-      notify: "success",
-      notify: ["failure", "delay"],
-      recipient: "",
-    },
-  };
+    var mailOptions = {
+      from: "yc@yc.com",
+      to: mailId,
+      subject: "Reset Your Password",
+      text: "To verify your account",
+      html:
+        '<html><body><p>To reset your password</p><a href="http://localhost:5500/password.html?token=' +
+        token +
+        '">Click Here</a></body></html>',
+      dsn: {
+        id: "ID",
+        return: "headers",
+        notify: "success",
+        notify: ["failure", "delay"],
+        recipient: "",
+      },
+    };
 
-  transporter.sendMail(mailOptions, function (error, info) {
-    console.log("<-------Entered------>");
-    console.log("----------->", error);
-    console.log("---------------->", info);
-    if (error) {
-      console.log(error);
-      reject(false);
-    } else {
-      console.log("Email sent: " + info.response);
-      resolve(true);
-    }
+    transporter.sendMail(mailOptions, function (error, info) {
+      console.log("<-------Entered------>");
+      console.log("----------->", error);
+      console.log("---------------->", info);
+      if (error) {
+        console.log(error);
+        reject(false);
+      } else {
+        console.log("Email sent: " + info.response);
+        resolve(true);
+      }
+    });
   });
-})
 }
 
-//-------------------------------SIGNUP------------------------------//
+// SIGNUP
 
 app.post("/signUp", (req, res) => {
   let data = req.body;
@@ -175,9 +181,7 @@ app.post("/signUp", (req, res) => {
   });
 });
 
-
-//-------------------------------VERIFY TOKEN------------------------------//
-
+// VERIFY TOKEN
 
 app.get("/token", (req, res) => {
   let token = req.query.token;
@@ -187,7 +191,7 @@ app.get("/token", (req, res) => {
     console.log("result------------>", result[0].id);
     if (err) {
       console.error(err.stack);
-    } else if(result[0].token==token) {
+    } else if (result[0].token == token) {
       console.log("Token Matched----------->");
       let sql1 = "update user set token = null,is_verified = 1 where id=?";
       connection.query(sql1, [result[0].id], (err, result) => {
@@ -196,20 +200,14 @@ app.get("/token", (req, res) => {
         }
         res.send(result.protocol41); //true
       });
-    }
-    else{d
-      res.send(false)
+    } else {
+      d;
+      res.send(false);
     }
   });
 });
 
-
-
-
-//-------------------------------LOGIN------------------------------//
-
-
-
+// LOGIN
 
 app.post("/logIn", (req, res) => {
   let data = req.body;
@@ -219,48 +217,44 @@ app.post("/logIn", (req, res) => {
   let sql = "select * from user where email=?";
   connection.query(sql, [data.email], (err, result) => {
     if (result.length > 0) {
+      console.log("------------>", result);
       if (err) {
         console.error(err.stack);
-      }
-      console.log("------------>", result);
+        res.send("Error");
+      } else if (result[0].is_verified == 1) {
+        console.log("Password in Database", result[0].passwrd);
+        bcrypt.compare(data.pwd, result[0].passwrd, (err, result1) => {
+          if (err) {
+            console.error(err.stack);
+            res.send("Error");
+            return;
+          } else if (result1) {
+            {
+              console.log("Matched");
+              let token = jwt.sign(
+                { email: data.email + parseInt(Math.random() * 10) },
+                "yc@201"
+              );
 
-      console.log("Password in Database", result[0].passwrd);
-      bcrypt.compare(data.pwd, result[0].passwrd, (err, result1) => {
-        if (err) {
-          console.error(err.stack);
-          res.send("Error")
-          return;
-        } else if (result1) {
-          if (result[0].is_verified == 1) {
-            console.log("Matched");
-            let token = jwt.sign(
-              { email: data.email + parseInt(Math.random() * 10) },
-              "yc@201"
-            );
-
-            res.json({ "result": result, "token": token });
+              res.json({ result: result, token: token });
+            }
           } else {
-            console.log("Please verify your mail!");
+            console.log("Something went wrong!");  // Password not matched
+            // res.send("Something went wrong!...")
           }
-        } else {
-          console.log("Something went wrong!");
-          // res.send("Something went wrong!...")
-        }
-      });
+        });
+      }
+      else{
+        console.log("Something went wrong!");  // Not verified
+      }
     } else {
       console.log("Something went wrong!");
     }
   });
 });
 
-
-
-
-//-------------------------------FORGOT PASSWORD------------------------------//
-//---------------------------------VERIFY MAIL-------------------------------//
-
-
-
+// FORGOT PASSWORD
+// VERIFY MAIL
 
 app.post("/forPass", (req, res) => {
   let email = req.body.email;
@@ -279,21 +273,21 @@ app.post("/forPass", (req, res) => {
         { email: email + parseInt(Math.random() * 10) },
         "yc@20"
       );
-      console.log("token new---------------->",token);
+      console.log("token new---------------->", token);
       let sql = "update user set token_forPass=? where id=?";
-      connection.query(sql, [token,result[0].id],async (err, result1) => {
+      connection.query(sql, [token, result[0].id], async (err, result1) => {
         if (err) {
           console.error(err.stack);
         }
         resp = await mailForPass(email, token);
-        if(resp){
+        if (resp) {
           console.log("inserted", result1);
           res.json({
-          result: true,
-          token: token,
-        });
+            result: true,
+            token: token,
+          });
         }
-        res.json({result : false})
+        res.json({ result: false });
       });
     } else {
       console.log("Something went wrong!");
@@ -301,15 +295,7 @@ app.post("/forPass", (req, res) => {
   });
 });
 
-
-
-
-
-//-------------------------------SET NEW PASSWORD------------------------------//
-
-
-
-
+// SET NEW PASSWORD
 
 app.post("/chgPass", (req, res) => {
   let pass = req.body.pass;
@@ -320,7 +306,7 @@ app.post("/chgPass", (req, res) => {
       console.log("hashhhhhhhhh", hash);
       let sql = "select * from user where token_forPass =?";
       connection.query(sql, [token], (err, result3) => {
-        if(err){
+        if (err) {
           console.error(err.stack);
         }
         console.log("result---------3>", result3);
@@ -338,16 +324,7 @@ app.post("/chgPass", (req, res) => {
   });
 });
 
-
-
-
-
-
-//-------------------------------VIEW LIST------------------------------//
-
-
-
-
+// VIEW LIST
 
 app.get("/sql", (req, res) => {
   let sql = "select * from user_message";
@@ -360,13 +337,7 @@ app.get("/sql", (req, res) => {
   });
 });
 
-
-
-
-//-------------------------------SUBMIT DATA------------------------------//
-
-
-
+// SUBMIT DATA
 
 app.post("/submitData", (req, res) => {
   let data = req.body;
@@ -382,13 +353,7 @@ app.post("/submitData", (req, res) => {
   });
 });
 
-
-
-
-//-------------------------------UPDATE DATA------------------------------//
-
-
-
+// UPDATE DATA
 
 app.put("/putData", (req, res) => {
   let data = req.body;
@@ -409,13 +374,7 @@ app.put("/putData", (req, res) => {
   );
 });
 
-
-
-
-//-------------------------------GET RECORD FOR BINDING-----------------------------//
-
-
-
+// GET RECORD FOR BINDIN
 
 app.get("/getRecordById", (req, res) => {
   console.log("----------->", req.query.id);
@@ -430,11 +389,7 @@ app.get("/getRecordById", (req, res) => {
   });
 });
 
-
-
-//-------------------------------RUNNING SERVER------------------------------//
-
-
+// RUNNING SERVER
 
 let PORT = process.env.PORT || 3012;
 

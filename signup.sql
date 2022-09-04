@@ -23,3 +23,6 @@ select email from user;
 
 -- ALTER TABLE user
 -- ALTER used SET DEFAULT 0;
+
+-- ALTER TABLE user
+-- ADD loginCount int(11);
