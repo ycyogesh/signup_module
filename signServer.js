@@ -9,7 +9,7 @@ const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 var { expressjwt: jwtverify } = require("express-jwt");
 const rateLimit = require("express-rate-limit");
-const MaskData = require('maskdata');
+const MaskData = require("maskdata");
 
 const saltRounds = 10;
 var count;
@@ -24,7 +24,6 @@ app.use(
   }).unless({ path: ["/token", "/logIn", "/signUp", "/forPass", "/chgPass"] })
 );
 
-
 // LIMITER
 
 const checktLimiter = rateLimit({
@@ -37,8 +36,6 @@ const checktLimiter = rateLimit({
 
 app.use("/api", checktLimiter);
 
-
-
 // MASKING DATA
 
 const maskOptions = {
@@ -50,7 +47,6 @@ const maskOptions = {
 
 // var nodeUser = MaskData.maskPassword("594b747d5faf6b",maskOptions)
 // var nodePass = MaskData.maskPassword("156e561cccbc78",maskOptions)
-
 
 // MYSQL CONNECTION
 
@@ -78,7 +74,7 @@ function sendActive(mailId, token) {
       host: "smtp.mailtrap.io",
       port: 2525,
       auth: {
-        user: "594b747d5faf6b",  
+        user: "594b747d5faf6b",
         pass: "156e561cccbc78",
       },
     });
@@ -166,10 +162,11 @@ function mailForPass(mailId, token) {
 // SIGNUP
 
 app.post("/signUp", (req, res) => {
-  let data = req.body;  // let {email,pwd} = req.body
+  let data = req.body; // let {email,pwd} = req.body
 
   let sqlCheck = "select * from user where email =?";
   connection.query(sqlCheck, [data.email], (err, result) => {
+   // console.log("index--------------->",result.indexOf("token"));
     if (err) {
       console.error(err.stack);
     } else if (result.length > 0) {
@@ -200,7 +197,7 @@ app.post("/signUp", (req, res) => {
               let res = await sendActive(data.email, token);
               if (res) {
                 console.log("Succesfully Registered...");
-                res.json({ result });
+                res.json(true );
               } else {
                 console.log("Nothing");
               }
@@ -247,6 +244,8 @@ app.post("/logIn", checktLimiter, (req, res) => {
 
   let sql = "select * from user where email=?";
   connection.query(sql, [data.email], (err, result) => {
+    const today  = new Date(); // The Date object returns today's timestamp
+    today.setDate(today.getDate());
     if (result.length > 0) {
       console.log("------------>", result);
       if (err) {
@@ -277,6 +276,10 @@ app.post("/logIn", checktLimiter, (req, res) => {
               //       console.log("Updated Successfully!",result4);
               //     }
               //   })
+
+              // const tomorrow = new Date(); // The Date object returns today's timestamp
+              // tomorrow.setDate(tomorrow.getDate() + 1);
+
               res.json({ result: result, token: token });
             }
           } else {
@@ -436,3 +439,7 @@ let PORT = process.env.PORT || 3012;
 app.listen(PORT, () => {
   console.log("App Running");
 });
+
+
+
+
