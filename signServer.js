@@ -8,7 +8,8 @@ const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 var { expressjwt: jwtverify } = require("express-jwt");
-const rateLimit = require('express-rate-limit')
+const rateLimit = require("express-rate-limit");
+const MaskData = require('maskdata');
 
 const saltRounds = 10;
 var count;
@@ -23,17 +24,33 @@ app.use(
   }).unless({ path: ["/token", "/logIn", "/signUp", "/forPass", "/chgPass"] })
 );
 
-const checktLimiter = rateLimit({
-	windowMs: 1440 * 60 * 1000, // 24 hour
-	max: 5, // Limit each IP to 5 create account requests per `window` (here, per hour)
-	message:
-		'Something went wrong', // Try Again Tomorrow
-	standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-  
-})
 
-app.use('/api', checktLimiter)
+// LIMITER
+
+const checktLimiter = rateLimit({
+  windowMs: 1440 * 60 * 1000, // 24 hour
+  max: 5, // Limit each IP to 5 create account requests per `window` (here, per hour)
+  message: "Something went wrong", // Try Again Tomorrow
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+});
+
+app.use("/api", checktLimiter);
+
+
+
+// MASKING DATA
+
+const maskOptions = {
+  maskWith: "*",
+  // maxMaskedCharacters: 20, // To limit the output String length to 20.
+  // unmaskedStartCharacters: 4,
+  // unmaskedEndCharacters: 9 // As last 9 characters of the secret key is a meta info which can be printed for debugging or other purpose
+};
+
+// var nodeUser = MaskData.maskPassword("594b747d5faf6b",maskOptions)
+// var nodePass = MaskData.maskPassword("156e561cccbc78",maskOptions)
+
 
 // MYSQL CONNECTION
 
@@ -61,7 +78,7 @@ function sendActive(mailId, token) {
       host: "smtp.mailtrap.io",
       port: 2525,
       auth: {
-        user: "594b747d5faf6b",
+        user: "594b747d5faf6b",  
         pass: "156e561cccbc78",
       },
     });
@@ -149,7 +166,7 @@ function mailForPass(mailId, token) {
 // SIGNUP
 
 app.post("/signUp", (req, res) => {
-  let data = req.body;
+  let data = req.body;  // let {email,pwd} = req.body
 
   let sqlCheck = "select * from user where email =?";
   connection.query(sqlCheck, [data.email], (err, result) => {
@@ -221,11 +238,9 @@ app.get("/token", (req, res) => {
   });
 });
 
-
 // LOGIN
 
-
-app.post("/logIn", checktLimiter,(req, res) => {
+app.post("/logIn", checktLimiter, (req, res) => {
   let data = req.body;
   console.log(data);
   console.log("Password Entered", data.pwd);
@@ -237,7 +252,7 @@ app.post("/logIn", checktLimiter,(req, res) => {
       if (err) {
         console.error(err.stack);
         res.send("Error");
-      } else if (result[0].is_verified == 1 && result[0].loginCount<4) {
+      } else if (result[0].is_verified == 1 && result[0].loginCount < 4) {
         console.log("Password in Database", result[0].passwrd);
         bcrypt.compare(data.pwd, result[0].passwrd, (err, result1) => {
           if (err) {
@@ -265,13 +280,12 @@ app.post("/logIn", checktLimiter,(req, res) => {
               res.json({ result: result, token: token });
             }
           } else {
-            console.log("Something went wrong!");  // Password not matched
+            console.log("Something went wrong!"); // Password not matched
             // res.send("Something went wrong!...")
           }
         });
-      }
-      else{
-        console.log("Something went wrong!");  // Not verified
+      } else {
+        console.log("Something went wrong!"); // Not verified
       }
     } else {
       console.log("Something went wrong!");
@@ -279,12 +293,10 @@ app.post("/logIn", checktLimiter,(req, res) => {
   });
 });
 
-
 // FORGOT PASSWORD
 // VERIFY MAIL
 
-
-app.post("/forPass", checktLimiter,(req, res) => {
+app.post("/forPass", checktLimiter, (req, res) => {
   let email = req.body.email;
   console.log("mail-------->", email);
   let sql = "select * from user where email =?";
@@ -323,9 +335,7 @@ app.post("/forPass", checktLimiter,(req, res) => {
   });
 });
 
-
 // SET NEW PASSWORD
-
 
 app.post("/chgPass", (req, res) => {
   let pass = req.body.pass;
