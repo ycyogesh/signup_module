@@ -309,7 +309,7 @@ app.post("/forPass", checktLimiter, (req, res) => {
       console.error(err.stack);
     } else if (result[0].email != email) {
       console.log("Something went wrong!");
-    } else if (result[0].email == email) {
+    } else if (result[0].email == email && is_verified==1) {
       console.log("Mail Matched");
       // var count = result[0].used
       var token = jwt.sign(
