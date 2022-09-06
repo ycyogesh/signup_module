@@ -45,10 +45,10 @@
                     // 'Authorization': 'my-auth-token',
                 },
             }).then(res=>{
-                res.json().then(data=>{
-                    if(data=="true"){
-                        window.alert("Check your mail to verify")
-                    }
+                 res.json().then(data=>{
+                     if(data=="true"){
+                         window.alert("Check your mail to verify")
+                     }
                     console.log(data);
                 })
             })
