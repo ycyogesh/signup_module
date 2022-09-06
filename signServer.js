@@ -237,7 +237,7 @@ app.get("/token", (req, res) => {
 
 // LOGIN
 
-app.post("/logIn", checktLimiter, (req, res) => {
+app.post("/logIn", (req, res) => {
   let data = req.body;
   console.log(data);
   console.log("Password Entered", data.pwd);
@@ -261,20 +261,28 @@ app.post("/logIn", checktLimiter, (req, res) => {
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
 
+    // Today
+    const today = new Date();
+    today.setDate(today.getDate());
+
     console.log("Hour-------------->",yesterday);
     // let count = result[0].loginCount
 
     let countCheck = result[0].loginCount
 
-    if(yesterday && countCheck==4){
-      countCheck = 0
+    if(today && countCheck==3){
+      res.send("Too many attempts!")
+      return;
+    }
+    else if(){
+
     }
     if (result.length > 0) {
       console.log("------------>", result);
       if (err) {
         console.error(err.stack);
         res.send("Error");
-      } else if (result[0].is_verified == 1 && countCheck < 4) {
+      } else if (result[0].is_verified == 1 && countCheck < 3) {
         console.log("Password in Database", result[0].passwrd);
         bcrypt.compare(data.pwd, result[0].passwrd, (err, result1) => {
           if (err) {
