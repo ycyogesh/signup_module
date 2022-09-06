@@ -244,14 +244,37 @@ app.post("/logIn", checktLimiter, (req, res) => {
 
   let sql = "select * from user where email=?";
   connection.query(sql, [data.email], (err, result) => {
-    const today  = new Date(); // The Date object returns today's timestamp
-    today.setDate(today.getDate());
+
+    // Get Data
+    // const today  = new Date(); // The Date object returns today's timestamp
+    // today.setDate(today.getDate());
+
+    // Get Time
+    // const d = new Date();
+    // let time = d.getTime();
+
+    // Get Hour
+    // const d = new Date();
+    // let hour = d.getHours();
+
+    // Yesterday
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    console.log("Hour-------------->",yesterday);
+    // let count = result[0].loginCount
+
+    let countCheck = result[0].loginCount
+
+    if(yesterday && countCheck==4){
+      countCheck = 0
+    }
     if (result.length > 0) {
       console.log("------------>", result);
       if (err) {
         console.error(err.stack);
         res.send("Error");
-      } else if (result[0].is_verified == 1 && result[0].loginCount < 4) {
+      } else if (result[0].is_verified == 1 && countCheck < 4) {
         console.log("Password in Database", result[0].passwrd);
         bcrypt.compare(data.pwd, result[0].passwrd, (err, result1) => {
           if (err) {
@@ -265,17 +288,16 @@ app.post("/logIn", checktLimiter, (req, res) => {
                 { email: data.email + parseInt(Math.random() * 10) },
                 "yc@201"
               );
-              // let count = result[0].loginCount
-              //   let sql = "update user set loginCount =? where id=?"
-              //   connection.query(sql,[count+1,result[0].id],(err,result4)=>{
-              //     if(err){
-              //       console.error("Update part Error",err.stack);
-              //       res.send("Error");
-              //     }
-              //     else{
-              //       console.log("Updated Successfully!",result4);
-              //     }
-              //   })
+                let sql = "update user set loginCount =? where id=?"
+                connection.query(sql,[countCheck+1,result[0].id],(err,result4)=>{
+                  if(err){
+                    console.error("Update part Error",err.stack);
+                    res.send("Error");
+                  }
+                  else{
+                    console.log("Updated Successfully!",result4);
+                  }
+                })
 
               // const tomorrow = new Date(); // The Date object returns today's timestamp
               // tomorrow.setDate(tomorrow.getDate() + 1);
