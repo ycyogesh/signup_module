@@ -307,6 +307,8 @@ app.post("/logIn", (req, res) => {
         }
         // console.log("currentTime----------->",timeQuery[0].time);
       })
+      res.json("Something went wrong!")
+      return;
     }
 
     if (result.length > 0 && result[0].isBlocked==0) {
@@ -353,6 +355,7 @@ app.post("/logIn", (req, res) => {
         console.log("Something went wrong!"); // Not verified
       }
     } else {
+      // send mail with token or verify anything
       console.log("Something went wrong!");
     }
   });
