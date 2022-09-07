@@ -219,17 +219,16 @@ app.get("/token", (req, res) => {
     console.log("result------------>", result[0].id);
     if (err) {
       console.error(err.stack);
-    } else if (result[0].token == token) {
+    } else if (result.length > 0) {
       console.log("Token Matched----------->");
       let sql1 = "update user set token = null,is_verified = 1 where id=?";
       connection.query(sql1, [result[0].id], (err, result) => {
         if (err) {
           console.error(err.stack);
         }
-        res.send(result.protocol41); //true
+        res.send(true); //true
       });
     } else {
-      d;
       res.send(false);
     }
   });
@@ -337,9 +336,11 @@ app.post("/forPass", checktLimiter, (req, res) => {
     console.log("resultttttttttttttt--->>>>>", result);
     if (err) {
       console.error(err.stack);
-    } else if (result[0].email != email) {
+      return
+    } else if (result.length == 0) {
       console.log("Something went wrong!");
-    } else if (result[0].email == email && is_verified==1) {
+      return
+    } else if (result[0].email == email && result[0].is_verified==1) {
       console.log("Mail Matched");
       // var count = result[0].used
       var token = jwt.sign(

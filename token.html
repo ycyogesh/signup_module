@@ -20,7 +20,7 @@
                 
                 console.log(res);
                 res.text().then(data=>{
-                    if(data){
+                    if(data == "true"){
                         document.getElementById("result").innerText = "Successfully Activated"
                         document.getElementById("logIn").innerHTML = '<a href="./login.html" id="logIn"><button type="button">Click here to Login</button></a>'
 
