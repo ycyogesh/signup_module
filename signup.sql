@@ -11,8 +11,9 @@
 -- updated_at datetime);
 -- desc user; 
 select * from user;
+
 -- delete from user where id= 3;
-select email from user;
+-- select email from user;
 -- update user set token = null,is_verified = 1 where id = 50;
 -- ALTER TABLE user
 -- ADD token_forPass varchar(255);
@@ -27,4 +28,10 @@ select email from user;
 
 -- ALTER TABLE user
 -- ALTER loginCount SET DEFAULT 0;
+
+-- ALTER TABLE user
+-- ADD isBlocked int(11) default 0;
+
+-- ALTER TABLE user
+-- ADD blockTime timestamp;
 

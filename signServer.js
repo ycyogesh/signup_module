@@ -10,6 +10,7 @@ const dotenv = require("dotenv");
 var { expressjwt: jwtverify } = require("express-jwt");
 const rateLimit = require("express-rate-limit");
 const MaskData = require("maskdata");
+const { body } = require("express-validator");
 
 const saltRounds = 10;
 var count;
@@ -191,7 +192,7 @@ app.post("/signUp", (req, res) => {
             sql,
             [data.email, hash, token],
             async (err, result) => {
-              if (err) {
+               if (err) {
                 console.log("Error");
               }
               let res = await sendActive(data.email, token);
@@ -233,7 +234,7 @@ app.get("/token", (req, res) => {
     }
   });
 });
-
+  
 // LOGIN
 
 app.post("/logIn", (req, res) => {
@@ -257,26 +258,44 @@ app.post("/logIn", (req, res) => {
     // let hour = d.getHours();
 
     // Yesterday
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
+    // const yesterday = new Date();
+    // yesterday.setDate(yesterday.getDate() - 1);
 
     // Today
-    const today = new Date();
-    today.setDate(today.getDate());
+    // const today = new Date();
+    // today.setDate(today.getDate());
 
-    console.log("Hour-------------->",yesterday);
+    // console.log("Hour-------------->",yesterday);
     // let count = result[0].loginCount
 
     let countCheck = result[0].loginCount
 
-    if(today && countCheck==3){
-      res.send("Too many attempts!")
-      return;
+    if(countCheck==3){
+      if(result[0].isBlocked==0){
+        let sql = "update user set blockTime=now(), isBlocked=? where id=?";
+        connection.query(sql,[1,result[0].id],(err,updateResult)=>{
+          if(err){
+            console.error("error"+err.stack);
+            res.send("Update Error",status,body);
+            return;
+          }
+          res.send("Updated",updateResult)
+          return;
+        })
+        return;
+      }
+      let sql = "select unix_timestamp(now()) as time;"
+      connection.query(sql,(err,timeQuery)=>{
+        if(err){
+          console.error("time error",err.stack);
+          res.send("Error");
+          return;
+        }
+        console.log("currentTime----------->",timeQuery[0].time);
+      })
     }
-    else if(){
 
-    }
-    if (result.length > 0) {
+    if (result.length > 0 && result[0].isBlocked==0) {
       console.log("------------>", result);
       if (err) {
         console.error(err.stack);
