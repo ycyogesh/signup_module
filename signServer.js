@@ -272,11 +272,11 @@ app.post("/logIn", (req, res) => {
 
     if(countCheck==3){
       if(result[0].isBlocked==0){
-        let sql = "update user set blockTime=now(), isBlocked=? where id=?";
+        let sql = "update user set blockTime=unix_timestamp(now()), isBlocked=? where id=?";
         connection.query(sql,[1,result[0].id],(err,updateResult)=>{
           if(err){
             console.error("error"+err.stack);
-            res.send("Update Error",status,body);
+            res.send("Update Error",updateResult);
             return;
           }
           res.send("Updated",updateResult)
@@ -291,7 +291,21 @@ app.post("/logIn", (req, res) => {
           res.send("Error");
           return;
         }
-        console.log("currentTime----------->",timeQuery[0].time);
+        let checkTime = result[0].blockTime - timeQuery[0].time
+        console.log("checkingggggggggggg",checkTime);
+        if(checkTime > 86400){
+          // loginCount = 0
+          let sql = "update user set loginCount=?,isBlocked=? where id=?";
+          connection.query(sql,[0,0,result[0].id],(err,resetCount)=>{
+            if(err){
+              console.error("time error",err.stack);
+              res.send("Error");
+              return;
+            }
+            res.send("Updated----->",resetCount)
+          })
+        }
+        // console.log("currentTime----------->",timeQuery[0].time);
       })
     }
 
