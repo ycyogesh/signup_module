@@ -167,7 +167,7 @@ app.post("/signUp", (req, res) => {
 
   let sqlCheck = "select * from user where email =?";
   connection.query(sqlCheck, [data.email], (err, result) => {
-   // console.log("index--------------->",result.indexOf("token"));
+    // console.log("index--------------->",result.indexOf("token"));
     if (err) {
       console.error(err.stack);
     } else if (result.length > 0) {
@@ -192,13 +192,13 @@ app.post("/signUp", (req, res) => {
             sql,
             [data.email, hash, token],
             async (err, result) => {
-               if (err) {
+              if (err) {
                 console.log("Error");
               }
               let res = await sendActive(data.email, token);
               if (res) {
                 console.log("Succesfully Registered...");
-                res.json(true );
+                res.json(true);
               } else {
                 console.log("Nothing");
               }
@@ -234,7 +234,7 @@ app.get("/token", (req, res) => {
     }
   });
 });
-  
+
 // LOGIN
 
 app.post("/logIn", (req, res) => {
@@ -244,7 +244,6 @@ app.post("/logIn", (req, res) => {
 
   let sql = "select * from user where email=?";
   connection.query(sql, [data.email], (err, result) => {
-
     // Get Data
     // const today  = new Date(); // The Date object returns today's timestamp
     // today.setDate(today.getDate());
@@ -268,55 +267,56 @@ app.post("/logIn", (req, res) => {
     // console.log("Hour-------------->",yesterday);
     // let count = result[0].loginCount
 
-    let countCheck = result[0].loginCount
+    let countCheck = result[0].loginCount;
 
-    if(countCheck==3){
-      if(result[0].isBlocked==0){
-        let sql = "update user set blockTime=unix_timestamp(now()), isBlocked=? where id=?";
-        connection.query(sql,[1,result[0].id],(err,updateResult)=>{
-          if(err){
-            console.error("error"+err.stack);
-            res.send("Update Error",updateResult);
+    if (countCheck > 3) {
+      if (result[0].isBlocked == 0) {
+        let sql =
+          "update user set blockTime=unix_timestamp(now()), isBlocked=? where id=?";
+        connection.query(sql, [1, result[0].id], (err, updateResult) => {
+          if (err) {
+            console.error("error" + err.stack);
+            res.send("Update Error", updateResult);
             return;
           }
-          res.send("Updated",updateResult)
+          res.send("Updated");
           return;
-        })
+        });
         return;
       }
-      let sql = "select unix_timestamp(now()) as time;"
-      connection.query(sql,(err,timeQuery)=>{
-        if(err){
-          console.error("time error",err.stack);
+      let sql = "select unix_timestamp(now()) as time;";
+      connection.query(sql, (err, timeQuery) => {
+        if (err) {
+          console.error("time error", err.stack);
           res.send("Error");
           return;
         }
-        let checkTime = result[0].blockTime - timeQuery[0].time
-        console.log("checkingggggggggggg",checkTime);
-        if(checkTime > 86400){
+        let checkTime = timeQuery[0].time - result[0].blockTime ;
+        console.log("checkingggggggggggg", checkTime);
+        if (checkTime > 100) {
           // loginCount = 0
           let sql = "update user set loginCount=?,isBlocked=? where id=?";
-          connection.query(sql,[0,0,result[0].id],(err,resetCount)=>{
-            if(err){
-              console.error("time error",err.stack);
+          connection.query(sql, [0, 0, result[0].id], (err, resetCount) => {
+            if (err) {
+              console.error("time error", err.stack);
               res.send("Error");
               return;
             }
-            res.send("Updated----->",resetCount)
-          })
+            res.status("status");
+          });
         }
         // console.log("currentTime----------->",timeQuery[0].time);
-      })
-      res.json("Something went wrong!")
+      });
+      res.json("Something went wrong!");
       return;
     }
 
-    if (result.length > 0 && result[0].isBlocked==0) {
+    if (result.length > 0 && result[0].isBlocked == 0) {
       console.log("------------>", result);
       if (err) {
         console.error(err.stack);
         res.send("Error");
-      } else if (result[0].is_verified == 1 && countCheck < 3) {
+      } else if (result[0].is_verified == 1) {
         console.log("Password in Database", result[0].passwrd);
         bcrypt.compare(data.pwd, result[0].passwrd, (err, result1) => {
           if (err) {
@@ -330,16 +330,6 @@ app.post("/logIn", (req, res) => {
                 { email: data.email + parseInt(Math.random() * 10) },
                 "yc@201"
               );
-                let sql = "update user set loginCount =? where id=?"
-                connection.query(sql,[countCheck+1,result[0].id],(err,result4)=>{
-                  if(err){
-                    console.error("Update part Error",err.stack);
-                    res.send("Error");
-                  }
-                  else{
-                    console.log("Updated Successfully!",result4);
-                  }
-                })
 
               // const tomorrow = new Date(); // The Date object returns today's timestamp
               // tomorrow.setDate(tomorrow.getDate() + 1);
@@ -347,6 +337,20 @@ app.post("/logIn", (req, res) => {
               res.json({ result: result, token: token });
             }
           } else {
+            let sql = "update user set loginCount =? where id=?";
+            connection.query(
+              sql,
+              [countCheck + 1, result[0].id],
+              (err, result4) => {
+                if (err) {
+                  console.error("Update part Error", err.stack);
+                  res.send("Error");
+                  return;
+                } 
+                console.log("Updated Successfully!", result4);                 
+              }
+            );
+
             console.log("Something went wrong!"); // Password not matched
             // res.send("Something went wrong!...")
           }
@@ -372,11 +376,11 @@ app.post("/forPass", checktLimiter, (req, res) => {
     console.log("resultttttttttttttt--->>>>>", result);
     if (err) {
       console.error(err.stack);
-      return
+      return;
     } else if (result.length == 0) {
       console.log("Something went wrong!");
-      return
-    } else if (result[0].email == email && result[0].is_verified==1) {
+      return;
+    } else if (result[0].email == email && result[0].is_verified == 1) {
       console.log("Mail Matched");
       // var count = result[0].used
       var token = jwt.sign(
@@ -506,7 +510,3 @@ let PORT = process.env.PORT || 3012;
 app.listen(PORT, () => {
   console.log("App Running");
 });
-
-
-
-
