@@ -6,7 +6,7 @@ const bodyParser = require("body-parser");
 const check = require("express-validator");
 const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
-const dotenv = require('dotenv')
+const dotenv = require("dotenv");
 require("dotenv").config();
 var { expressjwt: jwtverify } = require("express-jwt");
 const rateLimit = require("express-rate-limit");
@@ -222,22 +222,21 @@ app.get("/token", (req, res) => {
     if (err) {
       console.error(err.stack);
     } else if (result.length > 0) {
-      if(result[0].token != null){
-      console.log("Token Matched----------->");
-      let sql1 = "update user set token = null,is_verified = 1 where id=?";
-      connection.query(sql1, [result[0].id], (err, result) => {
-        if (err) {
-          console.error(err.stack);
-        }
-        res.send(true); //true
-      });
+      if (result[0].token != null) {
+        console.log("Token Matched----------->");
+        let sql1 = "update user set token = null,is_verified = 1 where id=?";
+        connection.query(sql1, [result[0].id], (err, result) => {
+          if (err) {
+            console.error(err.stack);
+          }
+          res.send(true); //true
+        });
+      } else {
+        res.send(false);
+      }
     } else {
       res.send(false);
     }
-  }
-  else{
-    res.send(false);
-  }
   });
 });
 
@@ -274,54 +273,51 @@ app.post("/logIn", (req, res) => {
     // let count = result[0].loginCount
 
     let countCheck = result[0].loginCount;
-
-    if (countCheck > 3) {
-      if (result[0].isBlocked == 0) {
-        let sql =
-          "update user set blockTime=unix_timestamp(now()), isBlocked=? where id=?";
-        connection.query(sql, [1, result[0].id], (err, updateResult) => {
-          if (err) {
-            console.error("error" + err.stack);
-            res.send("Update Error", updateResult);
-            return;
-          }
-          res.send("Updated");
-          return;
-        });
-        return;
-      }
-      let sql = "select unix_timestamp(now()) as time;";
-      connection.query(sql, (err, timeQuery) => {
-        if (err) {
-          console.error("time error", err.stack);
-          res.send("Error");
-          return;
-        }
-        let checkTime = timeQuery[0].time - result[0].blockTime ;
-        console.log("checkingggggggggggg", checkTime);
-        if (checkTime > 86400) {
-          // loginCount = 0
-          let sql = "update user set loginCount=?,isBlocked=? where id=?";
-          connection.query(sql, [0, 0, result[0].id], (err, resetCount) => {
+    if (result.length > 0) {
+      if (countCheck > 3) {
+        if (result[0].isBlocked == 0) {
+          let sql =
+            "update user set blockTime=unix_timestamp(now()), isBlocked=? where id=?";
+          connection.query(sql, [1, result[0].id], (err, updateResult) => {
             if (err) {
-              console.error("time error", err.stack);
-              res.send("Error");
+              console.error("error" + err.stack);
+              res.send("Update Error", updateResult);
               return;
             }
-            res.status("status");
+            res.send("Updated");
+            return;
           });
+          return;
         }
-        // console.log("currentTime----------->",timeQuery[0].time);
-      });
-      res.json("Something went wrong!");
+        let sql = "select unix_timestamp(now()) as time;";
+        connection.query(sql, (err, timeQuery) => {
+          if (err) {
+            console.error("time error", err.stack);
+            res.send("Error");
+            return;
+          }
+          let checkTime = timeQuery[0].time - result[0].blockTime;
+          console.log("checkingggggggggggg", checkTime);
+          if (checkTime > 86400) {
+            // loginCount = 0
+            let sql = "update user set loginCount=?,isBlocked=? where id=?";
+            connection.query(sql, [0, 0, result[0].id], (err, resetCount) => {
+              if (err) {
+                console.error("time error", err.stack);
+                res.send("Error");
+                return;
+              }
+              res.status("status");
+            });
+          }
+          // console.log("currentTime----------->",timeQuery[0].time);
+        });
+        res.json("Something went wrong!");
+        return;
+      }
       return;
     }
-
     if (result.length > 0 && result[0].isBlocked == 0) {
-
-
-
-      
       console.log("------------>", result);
       if (err) {
         console.error(err.stack);
@@ -356,11 +352,10 @@ app.post("/logIn", (req, res) => {
                   console.error("Update part Error", err.stack);
                   res.send("Error");
                   return;
-                } 
-                console.log("Updated Successfully!", result4);                 
+                }
+                console.log("Updated Successfully!", result4);
               }
             );
-
             console.log("Something went wrong!"); // Password not matched
             // res.send("Something went wrong!...")
           }
