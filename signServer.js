@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 const check = require("express-validator");
 const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
+const dotenv = require('dotenv')
 require("dotenv").config();
 var { expressjwt: jwtverify } = require("express-jwt");
 const rateLimit = require("express-rate-limit");
@@ -17,7 +18,7 @@ var count;
 app = express();
 app.use(cors());
 app.use(express.json());
-dotenv.config();
+// dotenv.config();
 app.use(
   jwtverify({
     secret: "yc@201",
@@ -52,10 +53,10 @@ const maskOptions = {
 // MYSQL CONNECTION
 
 var connection = mysql.createConnection({
-  host: "localhost",
-  user: "nodejs",
-  password: "Node@123",
-  database: "crud",
+  host: process.env.HOST,
+  user: process.env.USER,
+  password: process.env.PASSWORD,
+  database: process.env.DATABASE,
 });
 
 connection.connect(function (err) {
@@ -317,6 +318,10 @@ app.post("/logIn", (req, res) => {
     }
 
     if (result.length > 0 && result[0].isBlocked == 0) {
+
+
+
+      
       console.log("------------>", result);
       if (err) {
         console.error(err.stack);
@@ -514,4 +519,5 @@ let PORT = process.env.PORT || 3012;
 
 app.listen(PORT, () => {
   console.log("App Running");
+  // console.log("Inputs---->",process.env);
 });
