@@ -234,8 +234,9 @@
 
 
       function logout(){
-        tokenNew = " "
-        localStorage.clear();
+        // tokenNew = " "
+        jwtr.destroy(tokenNew); 
+        localStorage.clear();  // jwtr.destroy(token) // backend
         window.alert("Logged Out Successfully")
       }
       

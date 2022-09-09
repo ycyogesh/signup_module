@@ -221,6 +221,7 @@ app.get("/token", (req, res) => {
     if (err) {
       console.error(err.stack);
     } else if (result.length > 0) {
+      if(result[0].token != null){
       console.log("Token Matched----------->");
       let sql1 = "update user set token = null,is_verified = 1 where id=?";
       connection.query(sql1, [result[0].id], (err, result) => {
@@ -232,6 +233,10 @@ app.get("/token", (req, res) => {
     } else {
       res.send(false);
     }
+  }
+  else{
+    res.send(false);
+  }
   });
 });
 
@@ -293,7 +298,7 @@ app.post("/logIn", (req, res) => {
         }
         let checkTime = timeQuery[0].time - result[0].blockTime ;
         console.log("checkingggggggggggg", checkTime);
-        if (checkTime > 100) {
+        if (checkTime > 86400) {
           // loginCount = 0
           let sql = "update user set loginCount=?,isBlocked=? where id=?";
           connection.query(sql, [0, 0, result[0].id], (err, resetCount) => {
