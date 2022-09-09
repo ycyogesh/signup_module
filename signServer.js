@@ -272,8 +272,8 @@ app.post("/logIn", (req, res) => {
     // console.log("Hour-------------->",yesterday);
     // let count = result[0].loginCount
 
-    let countCheck = result[0].loginCount;
     if (result.length > 0) {
+    let countCheck = result[0].loginCount;
       if (countCheck > 3) {
         if (result[0].isBlocked == 0) {
           let sql =
