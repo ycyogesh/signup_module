@@ -6,7 +6,7 @@ const bodyParser = require("body-parser");
 const check = require("express-validator");
 const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
-const dotenv = require("dotenv");
+require("dotenv").config();
 var { expressjwt: jwtverify } = require("express-jwt");
 const rateLimit = require("express-rate-limit");
 const MaskData = require("maskdata");
@@ -72,11 +72,11 @@ function sendActive(mailId, token) {
   return new Promise((resolve, reject) => {
     console.log("Activation Processing", token);
     var transporter = nodemailer.createTransport({
-      host: "smtp.mailtrap.io",
+      host: process.env.HOST_EMAIL,
       port: 2525,
       auth: {
-        user: "594b747d5faf6b",
-        pass: "156e561cccbc78",
+        user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASS,
       },
     });
 
