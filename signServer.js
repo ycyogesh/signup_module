@@ -493,7 +493,7 @@ app.put("/putData", (req, res) => {
   );
 });
 
-// GET RECORD FOR BINDIN
+// GET RECORD FOR BINDING
 
 app.get("/getRecordById", (req, res) => {
   console.log("----------->", req.query.id);
