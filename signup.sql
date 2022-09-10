@@ -35,11 +35,12 @@ select * from user;
 -- ALTER TABLE user
 -- ADD blockTime timestamp;
 
-select now() as time;
-select unix_timestamp(now()) as time;
-select unix_timestamp();
+-- select now() as time;
+-- select unix_timestamp(now()) as time;
+-- select unix_timestamp();
 
 -- ALTER TABLE user
 -- MODIFY COLUMN blockTime varchar(50);
 
-update user set blockTime=unix_timestamp(now()), isBlocked=0 where id=50;
+-- update user set blockTime=unix_timestamp(now()), isBlocked=0 where id=50;
+-- update user set loginCount = 3 where id = 94;

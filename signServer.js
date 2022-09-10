@@ -275,7 +275,7 @@ app.post("/logIn", (req, res) => {
     console.log("length --------->",result.length);
     if (result.length > 0) {
     let countCheck = result[0].loginCount;
-      if (countCheck > 3) {
+      if (countCheck == 3) {
         console.log("Entered Countcheck part---------->");
         if (result[0].isBlocked == 0) {
           let sql =
@@ -286,7 +286,7 @@ app.post("/logIn", (req, res) => {
               res.send("Update Error", updateResult);
               return;
             }
-            res.send("Updated");
+            res.json({"Updated" : "Updated"});
             return;
           });
           return;
@@ -300,7 +300,7 @@ app.post("/logIn", (req, res) => {
           }
           let checkTime = timeQuery[0].time - result[0].blockTime;
           console.log("checkingggggggggggg", checkTime);
-          if (checkTime > 86400) {
+          if (checkTime > 60) {
             // loginCount = 0
             let sql = "update user set loginCount=?,isBlocked=?,blockTime=null where id=?";
             connection.query(sql, [0, 0,result[0].id], (err, resetCount) => {
@@ -345,6 +345,8 @@ app.post("/logIn", (req, res) => {
               res.json({ result: result, token: token });
             }
           } else {
+            countCheck = result[0].loginCount
+            if(countCheck < 4){
             let sql = "update user set loginCount =? where id=?";
             connection.query(
               sql,
@@ -359,18 +361,19 @@ app.post("/logIn", (req, res) => {
               }
             );
             console.log("Something went wrong!"); // Password not matched
-            // res.json({ result: false });
+            res.json({ result: false });
             // res.send("Something went wrong!...")
           }
+        }
         });
       } else {
         console.log("Something went wrong!"); // Not verified
-        // res.json({ result: false });
+        res.json({ result: false });
       }
     } else {
       // send mail with token or verify anything
       console.log("Something went wrong!");
-      // res.json({ result: false });
+      res.json({ result: false });
     }
   });
 });
