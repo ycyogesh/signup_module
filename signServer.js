@@ -300,7 +300,7 @@ app.post("/logIn", (req, res) => {
           }
           let checkTime = timeQuery[0].time - result[0].blockTime;
           console.log("checkingggggggggggg", checkTime);
-          if (checkTime > 60) {
+          if (checkTime > 86400) {
             // loginCount = 0
             let sql = "update user set loginCount=?,isBlocked=?,blockTime=null where id=?";
             connection.query(sql, [0, 0,result[0].id], (err, resetCount) => {
