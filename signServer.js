@@ -271,10 +271,12 @@ app.post("/logIn", (req, res) => {
 
     // console.log("Hour-------------->",yesterday);
     // let count = result[0].loginCount
-
+    console.log("Select Query--------->",result);
+    console.log("length --------->",result.length);
     if (result.length > 0) {
     let countCheck = result[0].loginCount;
       if (countCheck > 3) {
+        console.log("Entered Countcheck part---------->");
         if (result[0].isBlocked == 0) {
           let sql =
             "update user set blockTime=unix_timestamp(now()), isBlocked=? where id=?";
@@ -300,8 +302,8 @@ app.post("/logIn", (req, res) => {
           console.log("checkingggggggggggg", checkTime);
           if (checkTime > 86400) {
             // loginCount = 0
-            let sql = "update user set loginCount=?,isBlocked=? where id=?";
-            connection.query(sql, [0, 0, result[0].id], (err, resetCount) => {
+            let sql = "update user set loginCount=?,isBlocked=?,blockTime=null where id=?";
+            connection.query(sql, [0, 0,result[0].id], (err, resetCount) => {
               if (err) {
                 console.error("time error", err.stack);
                 res.send("Error");
@@ -315,8 +317,8 @@ app.post("/logIn", (req, res) => {
         res.json("Something went wrong!");
         return;
       }
-      return;
-    }
+      //return;
+    };
     if (result.length > 0 && result[0].isBlocked == 0) {
       console.log("------------>", result);
       if (err) {
@@ -357,15 +359,18 @@ app.post("/logIn", (req, res) => {
               }
             );
             console.log("Something went wrong!"); // Password not matched
+            // res.json({ result: false });
             // res.send("Something went wrong!...")
           }
         });
       } else {
         console.log("Something went wrong!"); // Not verified
+        // res.json({ result: false });
       }
     } else {
       // send mail with token or verify anything
       console.log("Something went wrong!");
+      // res.json({ result: false });
     }
   });
 });
