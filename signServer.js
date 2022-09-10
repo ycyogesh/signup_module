@@ -514,5 +514,5 @@ let PORT = process.env.PORT || 3012;
 
 app.listen(PORT, () => {
   console.log("App Running");
-  console.log("Inputs---->",process.env);
+  // console.log("Inputs---->",process.env);
 });
