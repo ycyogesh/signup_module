@@ -54,7 +54,7 @@ const maskOptions = {
 
 var connection = mysql.createConnection({
   host: process.env.HOST,
-  user: process.env.USER,
+  user: process.env.MYSQL_USER,
   password: process.env.PASSWORD,
   database: process.env.DATABASE,
 });
@@ -514,5 +514,5 @@ let PORT = process.env.PORT || 3012;
 
 app.listen(PORT, () => {
   console.log("App Running");
-  // console.log("Inputs---->",process.env);
+  console.log("Inputs---->",process.env);
 });
