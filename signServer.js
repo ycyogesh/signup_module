@@ -333,7 +333,7 @@ app.post("/logIn", (req, res) => {
           } else {
             console.log("Entered Password else part---------->");
             countCheck = result[0].loginCount
-            if(countCheck < 3){
+            if(countCheck < 2){
             let sql = "update user set loginCount =? where id=?";
             connection.query(
               sql,
@@ -354,7 +354,7 @@ app.post("/logIn", (req, res) => {
           }
           let sql =
             "update user set blockTime=unix_timestamp(now()), loginCount=?, isBlocked=? where id=?";
-            connection.query(sql,[countCheck,1,result[0].id],(err,updateResult)=>{
+            connection.query(sql,[countCheck+1,1,result[0].id],(err,updateResult)=>{
               if (err) {
                 console.error(err.stack);
                 res.send("Error");
