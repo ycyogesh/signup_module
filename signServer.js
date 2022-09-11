@@ -275,27 +275,13 @@ app.post("/logIn", (req, res) => {
     console.log("length --------->",result.length);
     if (result.length > 0) {
     let countCheck = result[0].loginCount;
-      if (countCheck == 3) {
+      if (countCheck == 3 && result[0].isBlocked == 1) {
         console.log("Entered Countcheck part---------->");
-        if (result[0].isBlocked == 0) {
-          let sql =
-            "update user set blockTime=unix_timestamp(now()), isBlocked=? where id=?";
-          connection.query(sql, [1, result[0].id], (err, updateResult) => {
-            if (err) {
-              console.error("error" + err.stack);
-              res.send("Update Error", updateResult);
-              return;
-            }
-            res.json({"Updated" : "Updated"});
-            return;
-          });
-          return;
-        }
-        let sql = "select unix_timestamp(now()) as time;";
+        let sql = "select unix_timestamp(now()) as time";
         connection.query(sql, (err, timeQuery) => {
           if (err) {
             console.error("time error", err.stack);
-            res.send("Error");
+            res.json("Error");
             return;
           }
           let checkTime = timeQuery[0].time - result[0].blockTime;
@@ -314,11 +300,11 @@ app.post("/logIn", (req, res) => {
           }
           // console.log("currentTime----------->",timeQuery[0].time);
         });
-        res.json("Something went wrong!");
-        return;
+        // res.json("Something went wrong!!!");   No need
       }
       //return;
     };
+
     if (result.length > 0 && result[0].isBlocked == 0) {
       console.log("------------>", result);
       if (err) {
@@ -345,8 +331,9 @@ app.post("/logIn", (req, res) => {
               res.json({ result: result, token: token });
             }
           } else {
+            console.log("Entered Password else part---------->");
             countCheck = result[0].loginCount
-            if(countCheck < 4){
+            if(countCheck < 3){
             let sql = "update user set loginCount =? where id=?";
             connection.query(
               sql,
@@ -362,8 +349,20 @@ app.post("/logIn", (req, res) => {
             );
             console.log("Something went wrong!"); // Password not matched
             res.json({ result: false });
+            return;
             // res.send("Something went wrong!...")
           }
+          let sql =
+            "update user set blockTime=unix_timestamp(now()), loginCount=?, isBlocked=? where id=?";
+            connection.query(sql,[countCheck,1,result[0].id],(err,updateResult)=>{
+              if (err) {
+                console.error(err.stack);
+                res.send("Error");
+                return;
+              }
+              console.log("Updated",updateResult);
+              res.send("Updated")
+            })
         }
         });
       } else {

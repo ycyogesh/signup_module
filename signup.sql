@@ -11,6 +11,8 @@
 -- updated_at datetime);
 -- desc user; 
 select * from user;
+select * from user where id = 90;
+select unix_timestamp(now()) as time;
 
 -- delete from user where id= 3;
 -- select email from user;
@@ -43,4 +45,4 @@ select * from user;
 -- MODIFY COLUMN blockTime varchar(50);
 
 -- update user set blockTime=unix_timestamp(now()), isBlocked=0 where id=50;
--- update user set loginCount = 3 where id = 94;
+-- update user set loginCount = 3 where id = 94; 
