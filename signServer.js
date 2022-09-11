@@ -361,7 +361,7 @@ app.post("/logIn", (req, res) => {
                 return;
               }
               console.log("Updated",updateResult);
-              res.send("Updated")
+              res.json("Updated")
             })
         }
         });
