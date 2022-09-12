@@ -370,8 +370,7 @@ app.post("/logIn", (req, res) => {
         res.json({ result: false });
       }
     } else {
-      // send mail with token or verify anything
-      console.log("Something went wrong!");
+      console.log("Something went wrong!"); // Mail Not matched
       res.json({ result: false });
     }
   });
