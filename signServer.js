@@ -247,7 +247,7 @@ app.post("/logIn", (req, res) => {
   console.log(data);
   console.log("Password Entered", data.pwd);
 
-  let sql = "select * from user where email=?";
+  let sql = "select *, unix_timestamp(now()) - blocktime as nowTime from user where email=?";
   connection.query(sql, [data.email], (err, result) => {
     // Get Data
     // const today  = new Date(); // The Date object returns today's timestamp
