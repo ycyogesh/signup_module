@@ -153,6 +153,7 @@ function mailForPass(mailId, token) {
       if (error) {
         console.log(error);
         reject(false);
+        return;
       } else {
         console.log("Email sent: " + info.response);
         resolve(true);
@@ -200,6 +201,7 @@ app.post("/signUp", (req, res) => {
               if (res) {
                 console.log("Succesfully Registered...");
                 res.json(true);
+                return;
               } else {
                 console.log("Nothing");
               }
@@ -247,7 +249,7 @@ app.post("/logIn", (req, res) => {
   console.log(data);
   console.log("Password Entered", data.pwd);
 
-  let sql = "select *, unix_timestamp(now()) - blocktime as nowTime from user where email=?";
+  let sql = "select * from user where email=?";    //, unix_timestamp(now()) - blocktime as nowTime from 
   connection.query(sql, [data.email], (err, result) => {
     // Get Data
     // const today  = new Date(); // The Date object returns today's timestamp
@@ -411,6 +413,7 @@ app.post("/forPass", checktLimiter, (req, res) => {
             result: true,
             token: token,
           });
+          return;
         }
         res.json({ result: false });
       });
@@ -468,10 +471,12 @@ app.post("/submitData", (req, res) => {
   let data = req.body;
   console.log(req);
   console.log("sssssssss", req.body);
-  let sql = "insert into user_message(name, email, message) values(?,?,?)";
-  connection.query(sql, [data.name, data.mail, data.msg], (err, result) => {
+  let sql = "insert into user_message(name, email) values(?,?)";
+  connection.query(sql, [data.name, data.mail], (err, result) => {
     if (err) {
+      console.error(err.stack);
       res.send("Error");
+      return
     }
     console.log("!!!!!!!!!!", result);
     res.json({ result });
